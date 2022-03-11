@@ -1,0 +1,46 @@
+﻿
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<ListView Height="300"
+                              Width="auto"
+                              ItemsSource="{Binding USBDevices}">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="DeviceID:" />
+                                    <TextBlock Width="300"
+                                               Margin="10,0,0,0"
+                                               FontWeight="Bold"
+                                               Text="{Binding DeviceID}" />
+                                    <TextBlock Text="PnpDeviceID:" />
+                                    <TextBlock Width="300"
+                                               Margin="10,0,0,0"
+                                               FontWeight="Bold"
+                                               Text="{Binding PnpDeviceID}" />
+                                    <TextBlock Text="Description:" />
+                                    <TextBlock Width="300"
+                                               Margin="10,0,0,0"
+                                               FontWeight="Bold"
+                                               Text="{Binding Description}" />
+                                    <TextBlock Width="10" />
+
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
