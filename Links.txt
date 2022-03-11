@@ -1,46 +1,61 @@
-﻿
+﻿BUGS ON HARD DISK ESTERNI:
+https://social.technet.microsoft.com/Forums/en-US/ded50188-d2a2-4762-ac49-5dc35587ca25/hklmsystemcurrentcontrolsetservicesusbstorstart4-doesnt-work-on-external-ssd?forum=win10itprosecurity
+
+
+Lista di tutti i dischi:
+https://social.msdn.microsoft.com/Forums/en-US/915e52e3-e5cc-48a6-b217-4dbcb0b60b7c/how-to-determine-usb-port-is-available-for-use-or-not?forum=csharpgeneral
+
+
+Tutorial:
+https://dev.to/iamthecarisma/enabling-and-disabling-usb-disk-drive-using-c-4dg5
+
+
+
+
+####################################################
+CODICE DI SPUNTO
+####################################################
 
 
 
 
 
+----------------------------- READ FROM REGISTRO
 
+        private void ReadRegisterValue() {
 
+            // HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\USBSTOR
+            RegistryKey rk = Registry.LocalMachine;
+            var t = rk.OpenSubKey("SYSTEM").OpenSubKey("CurrentControlSet").OpenSubKey("Services").OpenSubKey("USBSTOR");
+            var t1 = t.GetValue("Start");
+            // Print out the keys. 
+            PrintKeys(t);
 
+        }
 
+        static void PrintKeys(RegistryKey rkey)
+        {
 
+            // Retrieve all the subkeys for the specified key. 
+            String[] names = rkey.GetValueNames();
+            
 
+            int icount = 0;
 
+            Console.WriteLine("Subkeys of " + rkey.Name);
+            Console.WriteLine("-----------------------------------------------");
 
+            // Print the contents of the array to the console. 
+            foreach (String s in names)
+            {
+                Console.WriteLine(s);
 
+                // The following code puts a limit on the number 
+                // of keys displayed.  Comment it out to print the 
+                // complete list. 
+                icount++;
+                if (icount >= 10)
+                    break;
+            }
 
-
-
-
-<ListView Height="300"
-                              Width="auto"
-                              ItemsSource="{Binding USBDevices}">
-                        <ListView.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="DeviceID:" />
-                                    <TextBlock Width="300"
-                                               Margin="10,0,0,0"
-                                               FontWeight="Bold"
-                                               Text="{Binding DeviceID}" />
-                                    <TextBlock Text="PnpDeviceID:" />
-                                    <TextBlock Width="300"
-                                               Margin="10,0,0,0"
-                                               FontWeight="Bold"
-                                               Text="{Binding PnpDeviceID}" />
-                                    <TextBlock Text="Description:" />
-                                    <TextBlock Width="300"
-                                               Margin="10,0,0,0"
-                                               FontWeight="Bold"
-                                               Text="{Binding Description}" />
-                                    <TextBlock Width="10" />
-
-                                </StackPanel>
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
+        }
