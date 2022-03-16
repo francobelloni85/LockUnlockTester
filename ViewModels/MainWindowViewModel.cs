@@ -448,7 +448,7 @@ namespace CG.LockUnlockTester
             }
             catch (Exception ex)
             {
-                UserMessage = $"Fail to enable the {deviceSelected.Description}!";
+                UserMessage = $"Fail to enable the {deviceSelected.Description}! Check if the LockUnlock library is compile in 64bit";
             }            
         }
 
@@ -459,7 +459,7 @@ namespace CG.LockUnlockTester
                 DeviceHelper.SetDeviceEnabled(DeviceSelected.ClassGuid, deviceSelected.DeviceID, false);
             }
             catch (Exception ex) {
-                UserMessage = $"Fail to disable the {deviceSelected.Description}!";
+                UserMessage = $"Fail to disable the {deviceSelected.Description}!. Check if the LockUnlock library is compile in 64bit";
             }
             
         }

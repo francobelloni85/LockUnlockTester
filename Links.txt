@@ -16,6 +16,11 @@ https://stackoverflow.com/questions/5276674/how-to-force-a-wpf-application-to-ru
 
 
 
+Invocare programma esterno
+https://stackoverflow.com/questions/4097000/how-do-i-disable-a-system-device-programmatically
+
+
+
 ####################################################
 CODICE DI SPUNTO
 ####################################################
