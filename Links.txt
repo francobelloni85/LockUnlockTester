@@ -11,6 +11,10 @@ https://dev.to/iamthecarisma/enabling-and-disabling-usb-disk-drive-using-c-4dg5
 
 
 
+Per avviare da Admin
+https://stackoverflow.com/questions/5276674/how-to-force-a-wpf-application-to-run-in-administrator-mode
+
+
 
 ####################################################
 CODICE DI SPUNTO

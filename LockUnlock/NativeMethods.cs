@@ -7,6 +7,10 @@ using Microsoft.Win32.SafeHandles;
 using System.Security;
 using System.Runtime.ConstrainedExecution;
 
+
+// FROM 
+// https://github.com/thedarkprojects/devjammer/blob/master/NativeSetupDiLib.cs
+
 namespace CG.LockUnlock
 {
 

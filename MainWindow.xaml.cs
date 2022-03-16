@@ -11,5 +11,10 @@ namespace CG.LockUnlockTester
         {
             InitializeComponent();
         }
+
+        private void ShowHideDetails(object sender, System.Windows.RoutedEventArgs e)
+        {
+
+        }
     }
 }
