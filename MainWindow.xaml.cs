@@ -1,4 +1,5 @@
-﻿using MahApps.Metro.Controls;
+﻿using GalaSoft.MvvmLight.Messaging;
+using MahApps.Metro.Controls;
 
 namespace CG.LockUnlockTester
 {
@@ -7,14 +8,11 @@ namespace CG.LockUnlockTester
     /// </summary>
     public partial class MainWindow : MetroWindow
     {
-        public MainWindow()
+        public MainWindow(ManageShortcutCallback shortcutCallback)
         {
+            DataContext = new MainWindowViewModel(shortcutCallback);
             InitializeComponent();
         }
 
-        private void ShowHideDetails(object sender, System.Windows.RoutedEventArgs e)
-        {
-
-        }
     }
 }

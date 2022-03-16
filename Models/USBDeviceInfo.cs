@@ -17,16 +17,6 @@ namespace CG.LockUnlockTester
             this.Status = status;
         }
 
-
-        public USBDeviceInfo(int count, string deviceID, string classGuid, bool isEnable)
-        {
-            this.Count = count;
-            this.DeviceID = deviceID;
-            this.ClassGuid = classGuid;
-            this.IsEnable = isEnable;
-        }
-
-
         public int Count { get; private set; }
         public string DeviceID { get; private set; }
         public string PnpDeviceID { get; private set; }
@@ -40,13 +30,14 @@ namespace CG.LockUnlockTester
 
     public class GenericDeviceInfo
     {
-        public GenericDeviceInfo(int count, string deviceID, Guid classGuid, string description, bool isEnable)
+        public GenericDeviceInfo(int count, string deviceID, Guid classGuid, string description, bool isEnable, string statusInfo)
         {
             this.Count = count;
             this.DeviceID = deviceID;
             this.ClassGuid = classGuid;
             this.Description = description;
             this.IsEnable = isEnable;
+            this.StatusInfo = statusInfo;
         }
 
         public int Count { get; private set; }
@@ -54,6 +45,8 @@ namespace CG.LockUnlockTester
         public string Description { get; private set; }
         public string Status { get; set; }
         public bool IsEnable { get; set; }
+        public string StatusInfo { get; set; }
+
         public Guid ClassGuid { get; set; }
     }
 

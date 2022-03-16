@@ -9,23 +9,24 @@
                   xmlns:local="clr-namespace:CG.LockUnlockTester"
                   mc:Ignorable="d"
                   Title="MainWindow"
-                  Height="1200"
+                  Height="2200"
                   Width="800">
 
-    <Window.Resources>
+    <!--<Window.Resources>
         <viewmodels:MainWindowViewModel x:Key="viewmodel" />
-    </Window.Resources>
+    </Window.Resources>-->
 
-    <Window.DataContext>
+    <!--<Window.DataContext>
         <StaticResource ResourceKey="viewmodel" />
-    </Window.DataContext>
+    </Window.DataContext>-->
 
     <ScrollViewer VerticalScrollBarVisibility="Auto">
 
         <StackPanel>
 
             <StackPanel>
-                <Border Margin="10" BorderBrush="Black"
+                <Border Margin="10"
+                        BorderBrush="Black"
                         BorderThickness="1">
 
                     <Label Margin="10"
@@ -173,15 +174,22 @@
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal">
                                         <Label   HorizontalAlignment="Stretch"
-                                                 HorizontalContentAlignment="Stretch"                                                 
+                                                 Width="40"
+                                                 HorizontalContentAlignment="Stretch"
                                                  Content="{Binding Count}" />
                                         <Label   HorizontalAlignment="Stretch"
                                                  HorizontalContentAlignment="Stretch"
-                                                 Width="450"
+                                                 Width="350"
                                                  Content="{Binding DeviceID}" />
                                         <Label   HorizontalAlignment="Stretch"
+                                                 Width="550"
+                                                 Margin="20,0,0,0"
                                                  HorizontalContentAlignment="Stretch"
                                                  Content="{Binding Description}" />
+                                        <Label   HorizontalAlignment="Stretch"
+                                                 HorizontalContentAlignment="Stretch"
+                                                 Content="{Binding StatusInfo}" />
+
                                     </StackPanel>
                                 </DataTemplate>
                             </ListView.ItemTemplate>
@@ -201,7 +209,7 @@
 
             </StackPanel>
 
-            
+
 
             <!-- DISABLE KEYBOARD -->
             <StackPanel>
@@ -215,26 +223,56 @@
                 <StackPanel Orientation="Horizontal"
                             Margin="10,00,0,0">
 
-                <Button Command="{Binding DisableVirtualKeyboardCommand }"
-                        Height="50" Width="250"
-                        IsEnabled="{Binding IsVirtualKeyboardDisable}">Disable</Button>
-                <Button Margin="10,00,0,0"
+                    <Button Command="{Binding DisableVirtualKeyboardCommand }"
+                            Height="50"
+                            Width="250"
+                            IsEnabled="{Binding IsVirtualKeyboardDisable}">Disable</Button>
+                    <Button Margin="10,00,0,0"
                             Height="50"
                             Width="250"
                             Command="{Binding EnableVirtualKeyboardCommand}"
-                        IsEnabled="{Binding IsVirtualKeyboardEnable}">Enable</Button>
+                            IsEnabled="{Binding IsVirtualKeyboardEnable}">Enable</Button>
+                </StackPanel>
+            </StackPanel>
+
+            <!-- DISABLE KEYBOARD -->
+            <StackPanel>
+
+                <Label Margin="10,30,0,0"
+                       Content="DISABLE SHORTCUT"
+                       FontSize="20"
+                       FontWeight="Black" />
+
+                <Border BorderBrush="Black"
+                        Margin="10"
+                        BorderThickness="1">
+                    <TextBox Height="25"></TextBox>
+                </Border>
+                
+                <StackPanel Orientation="Horizontal"
+                            Margin="10,10,0,0">
+
+                    <Button Command="{Binding DisableShortcutCommand }"
+                            Height="50"
+                            Width="250"
+                            IsEnabled="{Binding IsDisableShortcut}">Disable</Button>
+                    <Button Margin="10,00,0,0"
+                            Height="50"
+                            Width="250"
+                            Command="{Binding EnableShortcutCommand}"
+                            IsEnabled="{Binding IsEnableShortcut}">Enable</Button>
                 </StackPanel>
             </StackPanel>
 
 
             <!-- Footer -->
-            <Border Height="50"></Border>      
-            
+            <Border Height="50"></Border>
+
         </StackPanel>
-      
-      
-        
-        
+
+
+
+
     </ScrollViewer>
 
 </mah:MetroWindow>

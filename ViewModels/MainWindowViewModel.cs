@@ -6,7 +6,6 @@ using Microsoft.Win32;
 using NLog;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Management;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
@@ -16,6 +15,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Diagnostics;
+
 
 // https://stackoverflow.com/questions/3331043/get-list-of-connected-usb-devices
 
@@ -55,11 +55,9 @@ namespace CG.LockUnlockTester
 
         // USB  -----------------------------------------
 
-
         private List<USBDeviceInfo> usbDevices = new List<USBDeviceInfo>();
 
         public List<USBDeviceInfo> USBDevices { get => usbDevices; set { usbDevices = value; base.RaisePropertyChanged(nameof(USBDevices)); } }
-
 
         private List<GenericDeviceInfo> allDevices = new List<GenericDeviceInfo>();
 
@@ -151,11 +149,27 @@ namespace CG.LockUnlockTester
         public bool IsVirtualKeyboardDisable{ get => isVirtualKeyboardDisable; set { isVirtualKeyboardDisable = value; base.RaisePropertyChanged(nameof(IsVirtualKeyboardDisable)); } }
 
 
-        public MainWindowViewModel()
+        // DISABLE SHORTCUT  ---------------------------------
+
+        public RelayCommand DisableShortcutCommand { get; set; }
+
+        public RelayCommand EnableShortcutCommand { get; set; }
+
+        private bool isDisableShortcut;
+        public bool IsDisableShortcut { get => isDisableShortcut; set { isDisableShortcut = value; base.RaisePropertyChanged(nameof(IsDisableShortcut)); } }
+
+        private bool isEnableShortcut = true;
+        public bool IsEnableShortcut { get => isEnableShortcut; set { isEnableShortcut = value; base.RaisePropertyChanged(nameof(IsEnableShortcut)); } }
+
+        ManageShortcutCallback shortcutCallback;
+
+        public MainWindowViewModel(ManageShortcutCallback shortcutCallback)
         {
 
             // Logger
             Logger.Info("Start the app");
+
+            this.shortcutCallback = shortcutCallback;
 
             this.USBDevices = GetUSBDevices();
 
@@ -173,9 +187,13 @@ namespace CG.LockUnlockTester
 
 
             // Virtual keyboard
-
             DisableVirtualKeyboardCommand = new RelayCommand(DisableVirtualKeyboardExecute);
             EnableVirtualKeyboardCommand = new RelayCommand(EnableVirtualKeyboardExecute);
+
+            // Short cut
+            DisableShortcutCommand = new RelayCommand(DisableShortcutExecute);
+            EnableShortcutCommand = new RelayCommand(EnableShortcutExecute); ;
+
 
             // USER ------------------------------
             using (WindowsIdentity identity = WindowsIdentity.GetCurrent())
@@ -236,7 +254,7 @@ namespace CG.LockUnlockTester
 
         }
 
-
+        
 
         private void LoadPCAllDevices()
         {
@@ -253,20 +271,40 @@ namespace CG.LockUnlockTester
 
             var countDevice = 1;
 
+            
             foreach (var usbDevice in allPcDevices)
             {
                 if (usbDevice.GetPropertyValue("DeviceID").ToString().Contains("USB")
                     && usbDevice.GetPropertyValue("Status").ToString().Contains("OK"))
                 {
+
+
+
+                    // https://powershell.one/wmi/root/cimv2/cim_logicaldevice
+
                     try
                     {
                         Guid mouseGuid = new Guid(usbDevice.GetPropertyValue("ClassGuid").ToString());
                         string instancePath = usbDevice.GetPropertyValue("DeviceID").ToString();
-                        string desciption = usbDevice.GetPropertyValue("DeviceID").ToString();
-                        var description = (string)usbDevice.GetPropertyValue("Description");
-                        var status = (string)usbDevice.GetPropertyValue("Status");
 
-                        AllDevices.Add(new GenericDeviceInfo(countDevice, instancePath, mouseGuid, description, true));
+                        var description = (string)usbDevice.GetPropertyValue("Description");
+                        
+                        var name = usbDevice.GetPropertyValue("Name");
+                        if (name != null) {
+                            var t = name.ToString();
+                            if (t.ToLower().Trim() != description.ToLower().Trim()) {
+                                description = description + " [" + t + "]";
+                            }                            
+                        }
+
+                        var stringStatusInfo = "not-set";
+                        var statusInfo = usbDevice.GetPropertyValue("StatusInfo");
+                        if (statusInfo != null) {
+                            stringStatusInfo = statusInfo.ToString();
+                        }
+
+
+                        AllDevices.Add(new GenericDeviceInfo(countDevice, instancePath, mouseGuid, description, true, stringStatusInfo));
                         //Console.WriteLine("mouseGuid={0}, instancePath={1}", mouseGuid, instancePath);
                         countDevice++;
                     }
@@ -528,6 +566,27 @@ namespace CG.LockUnlockTester
         }
 
         #endregion
+
+
+        #region Disable Shortcut
+
+        private void EnableShortcutExecute()
+        {
+            shortcutCallback.Invoke(true);
+            IsEnableShortcut = false;
+            IsDisableShortcut = true;
+        }
+
+        private void DisableShortcutExecute()
+        {
+            shortcutCallback.Invoke(false);
+            IsEnableShortcut = true;
+            IsDisableShortcut = false;
+        }
+
+
+        #endregion
+
 
     }
 }
