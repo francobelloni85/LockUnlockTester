@@ -15,6 +15,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Diagnostics;
 
 // https://stackoverflow.com/questions/3331043/get-list-of-connected-usb-devices
 
@@ -26,6 +27,9 @@ namespace CG.LockUnlockTester
 {
     public class MainWindowViewModel : ViewModelBase
     {
+
+        #region DISABLE USB 
+
         [DllImport("User32.dll")]
         internal static extern bool SetupDiEnumDeviceInfo(SafeDeviceInfoSetHandle deviceInfoSet, int memberIndex, ref DeviceInfoData deviceInfoData);
         [DllImport("User32.dll")]
@@ -38,6 +42,10 @@ namespace CG.LockUnlockTester
         internal static extern bool SetupDiDestroyDeviceInfoList(IntPtr deviceInfoSet);
         [DllImport("User32.dll")]
         internal static extern bool SetupDiSetClassInstallParams(SafeDeviceInfoSetHandle deviceInfoSet, [In()] ref DeviceInfoData deviceInfoData, [In()] ref PropertyChangeParameters classInstallParams, int classInstallParamsSize);
+
+        #endregion
+
+
 
         /// <summary>
         /// Logger
@@ -130,13 +138,17 @@ namespace CG.LockUnlockTester
         public string UserMessage { get => userMessage; set { userMessage = value; base.RaisePropertyChanged(nameof(UserMessage)); } }
 
 
+        // VIRTUAL KEYBOARD ---------------------------------
 
+        public RelayCommand DisableVirtualKeyboardCommand { get; set; }
 
+        public RelayCommand EnableVirtualKeyboardCommand { get; set; }
 
+        private bool isVirtualKeyboardEnable;
+        public bool IsVirtualKeyboardEnable { get => isVirtualKeyboardEnable; set { isVirtualKeyboardEnable = value; base.RaisePropertyChanged(nameof(IsVirtualKeyboardEnable)); } }
 
-
-
-
+        private bool isVirtualKeyboardDisable = true;
+        public bool IsVirtualKeyboardDisable{ get => isVirtualKeyboardDisable; set { isVirtualKeyboardDisable = value; base.RaisePropertyChanged(nameof(IsVirtualKeyboardDisable)); } }
 
 
         public MainWindowViewModel()
@@ -159,6 +171,12 @@ namespace CG.LockUnlockTester
             EnableDeviceCommand = new RelayCommand(EnableDeviceCommandExecute);
             RefreshAllDeviceListCommand = new RelayCommand(RefreshAllDeviceListExecute);
 
+
+            // Virtual keyboard
+
+            DisableVirtualKeyboardCommand = new RelayCommand(DisableVirtualKeyboardExecute);
+            EnableVirtualKeyboardCommand = new RelayCommand(EnableVirtualKeyboardExecute);
+
             // USER ------------------------------
             using (WindowsIdentity identity = WindowsIdentity.GetCurrent())
             {
@@ -171,7 +189,12 @@ namespace CG.LockUnlockTester
 
 
             ReadCurrentUsbStatus();
+
             LoadPCAllDevices();
+
+
+            // 
+
 
             //ReadRegisterValue();
 
@@ -211,19 +234,8 @@ namespace CG.LockUnlockTester
 
             //var usbDriver = new List<USBDeviceInfo>();
 
-
-
-
-
-
-            //foreach (var usbDevice in usbDriver)
-            //{
-
-            //}
-
-
-
         }
+
 
 
         private void LoadPCAllDevices()
@@ -260,7 +272,7 @@ namespace CG.LockUnlockTester
                     }
                     catch (Exception ex)
                     {
-                        Logger.Info(ex);
+                        Logger.Error(ex);
                     }
                     //DeviceHelper.SetDeviceEnabled(mouseGuid, instancePath, true);
                 }
@@ -467,6 +479,55 @@ namespace CG.LockUnlockTester
 
         #endregion
 
+
+        #region Virtual keyboard
+
+        // https://answers.microsoft.com/en-us/windows/forum/all/cannot-disablestop-touch-keyboard-and-handwriting/091c4403-098b-49ac-a18c-6af3d787b72a
+
+        private void EnableVirtualKeyboardExecute()
+        {
+            string command = string.Empty;
+            try
+            {
+                command= "sc config \"TabletInputService\" start= disabled";
+                Process.Start("cmd.exe", "/C " + command);
+
+                command = "sc stop \"TabletInputService\"";
+                Process.Start("cmd.exe", "/C " + command);
+                
+            }
+            catch (Exception ex) {
+                UserMessage = "Fail to execute command= " + command;
+                Logger.Error(ex);
+            }
+            IsVirtualKeyboardDisable = true;
+            IsVirtualKeyboardEnable = false;
+        }
+
+        private void DisableVirtualKeyboardExecute()
+        {
+            string command = string.Empty;
+            try
+            {
+                command = "sc config \"TabletInputService\" start= auto";
+                Process.Start("cmd.exe", "/C " + command);
+
+                command = "sc start \"TabletInputService\"";
+                Process.Start("cmd.exe", "/C " + command);
+
+            }
+            catch (Exception ex)
+            {
+                UserMessage = "Fail to execute command= " + command;
+                Logger.Error(ex);
+            }
+
+            IsVirtualKeyboardDisable = false;
+            IsVirtualKeyboardEnable = true;
+
+        }
+
+        #endregion
 
     }
 }

@@ -20,6 +20,21 @@ Invocare programma esterno
 https://stackoverflow.com/questions/4097000/how-do-i-disable-a-system-device-programmatically
 
 
+Altra libreria
+https://stackoverflow.com/questions/1438371/win32-api-function-to-programmatically-enable-disable-device/1610140#1610140
+
+
+Tastiera sullo schermo
+https://stackoverflow.com/questions/15554786/how-to-use-windows-on-screen-keyboard-in-c-sharp-winforms
+
+Disabilitare con console
+https://answers.microsoft.com/en-us/windows/forum/all/cannot-disablestop-touch-keyboard-and-handwriting/091c4403-098b-49ac-a18c-6af3d787b72a
+
+Intercettare tasti premuti
+https://stackoverflow.com/questions/3361109/how-can-i-disable-windows-key-in-c
+
+
+
 
 ####################################################
 CODICE DI SPUNTO

@@ -69,7 +69,7 @@
                 <StackPanel Orientation="Horizontal"
                             Margin="10">
                     <Label Margin="10"
-                           Content="USB LIST"
+                           Content="DISABLE GLOBALLY USBs"
                            FontSize="20"
                            FontWeight="Black" />
                     <Label VerticalAlignment="Center"
@@ -125,7 +125,7 @@
             <StackPanel>
 
                 <Label Margin="10"
-                       Content="ALL DEVICE LIST"
+                       Content="DISABLE SINGLE USB"
                        FontSize="20"
                        FontWeight="Black" />
 
@@ -199,19 +199,42 @@
 
                 </Grid>
 
-                <!--  Aggiunge un pulsante per altra query  -->
-                <!--
-            <Button Width="70"
-                    Margin="10,10,10,0"
-                    HorizontalAlignment="Right"
-                    Command="{Binding AddNewSQLCommand}"
-                    Content="ADD"
-                    Visibility="Hidden" />-->
-
             </StackPanel>
 
-        </StackPanel>
+            
 
+            <!-- DISABLE KEYBOARD -->
+            <StackPanel>
+
+                <Label Margin="10"
+                       Content="VIRTUAL KEYBOARD"
+                       FontSize="20"
+                       FontWeight="Black" />
+
+
+                <StackPanel Orientation="Horizontal"
+                            Margin="10,00,0,0">
+
+                <Button Command="{Binding DisableVirtualKeyboardCommand }"
+                        Height="50" Width="250"
+                        IsEnabled="{Binding IsVirtualKeyboardDisable}">Disable</Button>
+                <Button Margin="10,00,0,0"
+                            Height="50"
+                            Width="250"
+                            Command="{Binding EnableVirtualKeyboardCommand}"
+                        IsEnabled="{Binding IsVirtualKeyboardEnable}">Enable</Button>
+                </StackPanel>
+            </StackPanel>
+
+
+            <!-- Footer -->
+            <Border Height="50"></Border>      
+            
+        </StackPanel>
+      
+      
+        
+        
     </ScrollViewer>
 
 </mah:MetroWindow>

@@ -50,6 +50,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Keyboard.cs" />
     <Compile Include="LockUnlockHelper.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="Enums.cs" />
