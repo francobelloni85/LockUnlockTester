@@ -50,6 +50,24 @@ https://stackoverflow.com/questions/42365824/output-result-from-powershell-comma
 
 
 
+
+Disabilitare taskbar
+
+https://www.atebits.com/hide-taskbar-in-windows-10/ comandi cmd
+https://www.winhelponline.com/blog/hide-taskbar-completely-windows/ con un programma
+https://www.reddit.com/r/windows/comments/atj5l2/is_there_a_way_to_hide_the_taskbar_completely/
+
+processo exprore
+https://gmadv.it/it/sistemi-operativi/come-riavviare-il-processo-explorer-exe-in-windows-10/
+
+
+idea mouse
+https://docs.microsoft.com/en-us/answers/questions/342793/c-use-clipcursor-to-block-the-mouse-from-going-to.html
+https://github.com/Codeusa/Borderless-Gaming
+
+
+
+
 ####################################################
 CODICE DI SPUNTO
 ####################################################

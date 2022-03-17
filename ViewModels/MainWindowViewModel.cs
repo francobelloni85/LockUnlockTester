@@ -7,8 +7,9 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
 using System.Text;
-using System.Windows;
+using System.Windows.Forms;
 using System.Windows.Input;
+using System.Windows.Threading;
 
 
 
@@ -22,6 +23,8 @@ namespace CG.LockUnlockTester
 {
     public class MainWindowViewModel : ViewModelBase
     {
+
+
 
         #region DISABLE USB 
 
@@ -155,10 +158,10 @@ namespace CG.LockUnlockTester
 
         public RelayCommand EnableShortcutCommand { get; set; }
 
-        private bool isDisableShortcut;
+        private bool isDisableShortcut = true;
         public bool IsDisableShortcut { get => isDisableShortcut; set { isDisableShortcut = value; base.RaisePropertyChanged(nameof(IsDisableShortcut)); } }
 
-        private bool isEnableShortcut = true;
+        private bool isEnableShortcut;
         public bool IsEnableShortcut { get => isEnableShortcut; set { isEnableShortcut = value; base.RaisePropertyChanged(nameof(IsEnableShortcut)); } }
 
         ManageShortcutCallback shortcutCallback;
@@ -170,21 +173,70 @@ namespace CG.LockUnlockTester
 
         public RelayCommand EnableTaskManagerCommand { get; set; }
 
-        private bool isTaskManagerDisable;
+        private bool isTaskManagerDisable = true;
         public bool IsTaskManagerDisable { get => isTaskManagerDisable; set { isTaskManagerDisable = value; base.RaisePropertyChanged(nameof(IsTaskManagerDisable)); } }
 
-        private bool isTaskManagerEnable = true;
+        private bool isTaskManagerEnable;
         public bool IsTaskManagerEnable { get => isTaskManagerEnable; set { isTaskManagerEnable = value; base.RaisePropertyChanged(nameof(IsTaskManagerEnable)); } }
 
+
+        // DISABLE TASK BAR  ---------------------------------
+
+        public RelayCommand DisableTaskBarCommand { get; set; }
+
+        public RelayCommand EnableTaskBarCommand { get; set; }
+
+        private bool isTaskBarDisable = true;
+        public bool IsTaskBarDisable { get => isTaskBarDisable; set { isTaskBarDisable = value; base.RaisePropertyChanged(nameof(IsTaskBarDisable)); } }
+
+        private bool isTaskbarEnable;
+        public bool IsTaskbarEnable { get => isTaskbarEnable; set { isTaskbarEnable = value; base.RaisePropertyChanged(nameof(IsTaskbarEnable)); } }
+
+
+        // DISABLE MOUSE LIMIT AREA ---------------------------------
+
+        private DispatcherTimer dispatcherTimerMousePosition;
+
+        private int MouseYLimit = -1;
+
+        public RelayCommand DisableLimitAreaMouseCommand { get; set; }
+
+        public RelayCommand EnableLimitAreaMouseCommand { get; set; }
+
+        private bool isLimitAreaMouseDisable;
+        public bool IsLimitAreaMouseDisable { get => isLimitAreaMouseDisable; set { isLimitAreaMouseDisable = value; base.RaisePropertyChanged(nameof(IsLimitAreaMouseDisable)); } }
+
+        private bool isLimitAreaMouseEnable = true;
+        public bool IsLimitAreaMouseEnable { get => isLimitAreaMouseEnable; set { isLimitAreaMouseEnable = value; base.RaisePropertyChanged(nameof(IsLimitAreaMouseEnable)); } }
+
+        public static System.Windows.Point GetMousePositionWindowsForms()
+        {
+            var point = Control.MousePosition;
+            return new System.Windows.Point(point.X, point.Y);
+        }
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetCursorPos(out Point pPoint);
+
+        public struct Point
+        {
+            public int X;
+            public int Y;
+
+            public Point(int x, int y)
+            {
+                this.X = x;
+                this.Y = y;
+            }
+        }
 
         /// <summary>
         /// CST
         /// </summary>
         /// <param name="shortcutCallback"></param>
         public MainWindowViewModel(ManageShortcutCallback shortcutCallback)
-        { 
-
-            Console.Read();
+        {
 
             // Logger
             Logger.Info("Start the app");
@@ -204,7 +256,7 @@ namespace CG.LockUnlockTester
             DisableDeviceCommand = new RelayCommand(DisableDeviceCommandExecute);
             EnableDeviceCommand = new RelayCommand(EnableDeviceCommandExecute);
             RefreshAllDeviceListCommand = new RelayCommand(RefreshAllDeviceListExecute);
-            EnableAllDeviceCommand  = new RelayCommand(EnableAllDeviceExecute);
+            EnableAllDeviceCommand = new RelayCommand(EnableAllDeviceExecute);
             DisableAllDeviceCommand = new RelayCommand(DisableAllDeviceExecute);
 
             // Virtual keyboard
@@ -218,6 +270,15 @@ namespace CG.LockUnlockTester
             // TaskManager
             DisableTaskManagerCommand = new RelayCommand(DisableTaskManagerExecute);
             EnableTaskManagerCommand = new RelayCommand(EnableTaskManagerExecute); ;
+
+            // TaskBar
+            DisableTaskBarCommand = new RelayCommand(DisableTaskBarExecute);
+            EnableTaskBarCommand = new RelayCommand(EnableTaskBarExecute); ;
+
+            // Mouse limit area
+            DisableLimitAreaMouseCommand = new RelayCommand(DisableLimitAreaMouseExecute);
+            EnableLimitAreaMouseCommand = new RelayCommand(EnableLimitAreaMouseExecute); ;
+
 
             // USER ------------------------------
             using (WindowsIdentity identity = WindowsIdentity.GetCurrent())
@@ -234,15 +295,25 @@ namespace CG.LockUnlockTester
 
             LoadPCAllDevices();
 
-        }
+            // Mouse events
 
+            //int PSBH = Screen.PrimaryScreen.Bounds.Height;
+            //int TaskBarHeight = PSBH - Screen.PrimaryScreen.WorkingArea.Height;
+
+            MouseYLimit = Screen.PrimaryScreen.WorkingArea.Height;
+
+            this.dispatcherTimerMousePosition = new DispatcherTimer();
+            this.dispatcherTimerMousePosition.Tick += new EventHandler(TimerTickMousePosition);
+            this.dispatcherTimerMousePosition.Interval = new TimeSpan(0, 0, 0, 0, 50);
+
+        }
 
         private void LoadPCAllDevices()
         {
 
-            Application.Current.Dispatcher.Invoke(() =>
+            System.Windows.Application.Current.Dispatcher.Invoke(() =>
             {
-                Mouse.OverrideCursor = Cursors.Wait;
+                Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;
             });
 
             AllDevices.Clear();
@@ -292,7 +363,7 @@ namespace CG.LockUnlockTester
                 }
             }
 
-            Application.Current.Dispatcher.Invoke(() =>
+            System.Windows.Application.Current.Dispatcher.Invoke(() =>
             {
                 Mouse.OverrideCursor = null;
             });
@@ -307,6 +378,8 @@ namespace CG.LockUnlockTester
             IsEnableUSBCommand = CurrentUsbStatus == USBStatus.Disable;
             RefreshUSBListExecute();
         }
+
+        #region USB Registry
 
         private void RefreshUSBListExecute()
         {
@@ -331,8 +404,7 @@ namespace CG.LockUnlockTester
             ReadCurrentUsbStatus();
         }
 
-
-
+        #endregion
 
         #region USB API
 
@@ -402,7 +474,6 @@ namespace CG.LockUnlockTester
 
         #endregion
 
-
         #region Virtual keyboard
 
         // https://answers.microsoft.com/en-us/windows/forum/all/cannot-disablestop-touch-keyboard-and-handwriting/091c4403-098b-49ac-a18c-6af3d787b72a
@@ -442,7 +513,6 @@ namespace CG.LockUnlockTester
 
         #endregion
 
-
         #region Disable Shortcut
 
         private void EnableShortcutExecute()
@@ -461,7 +531,6 @@ namespace CG.LockUnlockTester
 
 
         #endregion
-
 
         #region TaskManager
 
@@ -499,6 +568,80 @@ namespace CG.LockUnlockTester
 
         #endregion
 
+        #region TaskBar
+
+
+        private void EnableTaskBarExecute()
+        {
+            try
+            {
+                LockUnlockHelper.SetTaskBarByCmd(true);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+                UserMessage = $"Fail to disable the Taskbar";
+            }
+            IsTaskBarDisable = true;
+            IsTaskbarEnable = false;
+        }
+
+        private void DisableTaskBarExecute()
+        {
+            try
+            {
+                LockUnlockHelper.SetTaskBarByCmd(false);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+                UserMessage = $"Fail to disable the Taskbar";
+            }
+            IsTaskBarDisable = false;
+            IsTaskbarEnable = true;
+        }
+
+        #endregion
+
+        #region LimitAreaMouse
+
+        private void EnableLimitAreaMouseExecute()
+        {
+            dispatcherTimerMousePosition.Start();
+            IsLimitAreaMouseEnable = false;
+            IsLimitAreaMouseDisable = true;
+        }
+
+        private void DisableLimitAreaMouseExecute()
+        {
+            dispatcherTimerMousePosition.Stop();
+            IsLimitAreaMouseEnable = true;
+            IsLimitAreaMouseDisable = false;
+        }
+
+        private void TimerTickMousePosition(object sender, EventArgs e)
+        {
+            if (!IsLimitAreaMouseEnable)
+            {
+                GetCursorPos(out Point pnt);
+                Console.WriteLine("Mouse {0}.{1}", pnt.X, pnt.Y);
+                if (pnt.Y > MouseYLimit)
+                {
+                    SetPosition(pnt.X, MouseYLimit-2);
+                }
+            }
+
+        }
+
+        private void SetPosition(int a, int b)
+        {
+            SetCursorPos(a, b);
+        }
+
+        [DllImport("User32.dll")]
+        private static extern bool SetCursorPos(int X, int Y);
+
+        #endregion
 
     }
 }

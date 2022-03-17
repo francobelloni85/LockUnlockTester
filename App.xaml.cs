@@ -23,6 +23,7 @@ namespace CG.LockUnlockTester
             wnd.Title = "Test Lock&Unlock";
             // Show the window
             wnd.Show();
+
             KListener.KeyDown += new RawKeyEventHandler(KListener_KeyDown);
         }
 

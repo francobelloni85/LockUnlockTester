@@ -215,5 +215,24 @@ namespace LockUnlock
         #endregion
 
 
+        #region TaskBar
+
+
+        public static void SetTaskBarByCmd(bool enable)
+        {
+            // Disable
+            var value = 3;
+            if (enable)
+            {
+                value = 2;
+            }
+            var command = "powershell -command \"&{$p='HKCU:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\StuckRects3';$v=(Get-ItemProperty -Path $p).Settings;$v[8]="+ value + ";&Set-ItemProperty -Path $p -Name Settings -Value $v;&Stop-Process -f -ProcessName explorer}\"";
+            Process.Start("cmd.exe", "/C " + command);
+        }
+
+        #endregion
+
+
+
     }
 }
