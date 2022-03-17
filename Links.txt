@@ -10,10 +10,12 @@ Tutorial:
 https://dev.to/iamthecarisma/enabling-and-disabling-usb-disk-drive-using-c-4dg5
 
 
-
 Per avviare da Admin
 https://stackoverflow.com/questions/5276674/how-to-force-a-wpf-application-to-run-in-administrator-mode
 
+
+Usare tool microsoft
+https://docs.microsoft.com/en-gb/windows-hardware/drivers/devtest/devcon
 
 
 Invocare programma esterno
@@ -33,6 +35,18 @@ https://answers.microsoft.com/en-us/windows/forum/all/cannot-disablestop-touch-k
 Intercettare tasti premuti
 https://stackoverflow.com/questions/3361109/how-can-i-disable-windows-key-in-c
 
+
+
+
+
+Lista USB con powershell
+https://docs.microsoft.com/en-us/windows/win32/cimwin32prov/win32-usbcontrollerdevice
+
+gwmi Win32_USBControllerDevice |%{[wmi]($_.Dependent)} | Sort Manufacturer,Description,DeviceID | Ft -GroupBy Manufacturer Description,Service,DeviceID
+
+https://stackoverflow.com/questions/27374767/missing-automation-from-namespace-system-management-missing-assembly-referenc
+
+https://stackoverflow.com/questions/42365824/output-result-from-powershell-command-to-c-sharp-variable
 
 
 

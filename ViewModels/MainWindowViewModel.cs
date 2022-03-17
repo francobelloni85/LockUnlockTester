@@ -11,6 +11,7 @@ using System.Windows;
 using System.Windows.Input;
 
 
+
 // https://stackoverflow.com/questions/3331043/get-list-of-connected-usb-devices
 
 // https://dev.to/iamthecarisma/enabling-and-disabling-usb-disk-drive-using-c-4dg5
@@ -162,12 +163,28 @@ namespace CG.LockUnlockTester
 
         ManageShortcutCallback shortcutCallback;
 
+
+        // DISABLE TASK MANAGER  ---------------------------------
+
+        public RelayCommand DisableTaskManagerCommand { get; set; }
+
+        public RelayCommand EnableTaskManagerCommand { get; set; }
+
+        private bool isTaskManagerDisable;
+        public bool IsTaskManagerDisable { get => isTaskManagerDisable; set { isTaskManagerDisable = value; base.RaisePropertyChanged(nameof(IsTaskManagerDisable)); } }
+
+        private bool isTaskManagerEnable = true;
+        public bool IsTaskManagerEnable { get => isTaskManagerEnable; set { isTaskManagerEnable = value; base.RaisePropertyChanged(nameof(IsTaskManagerEnable)); } }
+
+
         /// <summary>
         /// CST
         /// </summary>
         /// <param name="shortcutCallback"></param>
         public MainWindowViewModel(ManageShortcutCallback shortcutCallback)
-        {
+        { 
+
+            Console.Read();
 
             // Logger
             Logger.Info("Start the app");
@@ -198,6 +215,9 @@ namespace CG.LockUnlockTester
             DisableShortcutCommand = new RelayCommand(DisableShortcutExecute);
             EnableShortcutCommand = new RelayCommand(EnableShortcutExecute); ;
 
+            // TaskManager
+            DisableTaskManagerCommand = new RelayCommand(DisableTaskManagerExecute);
+            EnableTaskManagerCommand = new RelayCommand(EnableTaskManagerExecute); ;
 
             // USER ------------------------------
             using (WindowsIdentity identity = WindowsIdentity.GetCurrent())
@@ -215,7 +235,6 @@ namespace CG.LockUnlockTester
             LoadPCAllDevices();
 
         }
-
 
 
         private void LoadPCAllDevices()
@@ -438,6 +457,43 @@ namespace CG.LockUnlockTester
             shortcutCallback.Invoke(false);
             IsEnableShortcut = true;
             IsDisableShortcut = false;
+        }
+
+
+        #endregion
+
+
+        #region TaskManager
+
+        private void EnableTaskManagerExecute()
+        {
+            try
+            {
+                LockUnlockHelper.SetTaskManagerByCmd(true);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+                UserMessage = $"Fail to enable the TaskManager";
+            }
+            IsTaskManagerDisable = true;
+            IsTaskManagerEnable = false;
+        }
+
+        private void DisableTaskManagerExecute()
+        {
+            try
+            {
+                LockUnlockHelper.SetTaskManagerByCmd(false);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+                UserMessage = $"Fail to disable the TaskManager";
+            }
+
+            IsTaskManagerDisable = false;
+            IsTaskManagerEnable = true;
         }
 
 

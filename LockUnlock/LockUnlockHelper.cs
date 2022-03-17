@@ -173,11 +173,47 @@ namespace LockUnlock
         #endregion
 
 
-        #region aaa
+        #region TaskManager
+
+        ///// <summary>
+        ///// DEPRECATO
+        ///// </summary>
+        ///// <param name="enable"></param>
+        //public static void SetTaskManagerByRegistry(bool enable)
+        //{
+        //    throw new Exception("Need to restart the pc, use SetTaskManagerByCmd");
+        //    //// OLD Windows
+        //    ////Microsoft.Win32.RegistryKey objRegistryKey = Microsoft.Win32.Registry.CurrentUser.CreateSubKey(@"Software\Microsoft\Windows\CurrentVersion\Policies\System");
+
+        //    //// windows 10 
+        //    //Microsoft.Win32.RegistryKey objRegistryKey = Microsoft.Win32.Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System");
+
+        //    //if (enable && objRegistryKey.GetValue("DisableTaskMgr") != null)
+        //    //    objRegistryKey.DeleteValue("DisableTaskMgr");
+        //    //else
+        //    //    objRegistryKey.SetValue("DisableTaskMgr", "1");
+        //    //objRegistryKey.Close();
+        //}
 
 
+        public static void SetTaskManagerByCmd(bool enable)
+        {
+            // https://www.digitalcitizen.life/easily-enable-or-disable-task-manager-using-taskmgred/
+
+            // Disable
+            var command = "reg add HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\System /v DisableTaskMgr /t REG_DWORD /d 1 /f";
+
+            if (enable)
+            {
+                // Enable
+                command = "reg add HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\System /v DisableTaskMgr /t REG_DWORD /d 0 /f";
+            }
+
+            Process.Start("cmd.exe", "/C " + command);
+        }
 
         #endregion
+
 
     }
 }
