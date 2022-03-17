@@ -70,7 +70,7 @@
                 <StackPanel Orientation="Horizontal"
                             Margin="10">
                     <Label Margin="10"
-                           Content="DISABLE GLOBALLY USBs"
+                           Content="DISABLE USB BY REGISTRY"
                            FontSize="20"
                            FontWeight="Black" />
                     <Label VerticalAlignment="Center"
@@ -126,7 +126,7 @@
             <StackPanel>
 
                 <Label Margin="10"
-                       Content="DISABLE SINGLE USB"
+                       Content="DISABLE USB BY API"
                        FontSize="20"
                        FontWeight="Black" />
 
@@ -152,6 +152,20 @@
                         <Button Margin="0,10,0,0"
                                 Command="{Binding EnableDeviceCommand}"
                                 IsEnabled="{Binding IsEnableDeviceCommandEnable}">Enable selected</Button>
+
+
+                        <Border Height="1" Background="Black" Margin="10"></Border>
+
+                        <Button Command="{Binding DisableAllDeviceCommand }"
+                                IsEnabled="{Binding IsDisableDeviceAllEnable}">Disable all</Button>
+                        <Button Margin="0,10,0,0"
+                                Command="{Binding EnableAllDeviceCommand}"
+                                IsEnabled="{Binding IsEnableDeviceAllEnable}">Enable all</Button>
+
+                        <Border Height="1"
+                                Background="Black"
+                                Margin="10"></Border>
+
                         <Button Margin="0,10,0,0"
                                 Command="{Binding RefreshAllDeviceListCommand}">Refresh</Button>
                     </StackPanel>
@@ -209,8 +223,6 @@
 
             </StackPanel>
 
-
-
             <!-- DISABLE KEYBOARD -->
             <StackPanel>
 
@@ -263,7 +275,6 @@
                             IsEnabled="{Binding IsEnableShortcut}">Enable</Button>
                 </StackPanel>
             </StackPanel>
-
 
             <!-- Footer -->
             <Border Height="50"></Border>

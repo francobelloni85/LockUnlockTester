@@ -11,7 +11,7 @@ using System.Runtime.ConstrainedExecution;
 // FROM 
 // https://github.com/thedarkprojects/devjammer/blob/master/NativeSetupDiLib.cs
 
-namespace CG.LockUnlock
+namespace LockUnlock
 {
 
     [Flags()]    
@@ -253,7 +253,7 @@ ref PropertyChangeParameters classInstallParams, int classInstallParamsSize);
 
     }
 
-    public sealed class DeviceHelper
+    internal sealed class DeviceHelper
     {
 
         private DeviceHelper()

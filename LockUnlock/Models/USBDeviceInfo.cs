@@ -1,9 +1,9 @@
 ﻿using System;
 
-namespace CG.LockUnlockTester
+namespace LockUnlock
 {
     /// <summary>
-    /// Class representing a USB device
+    /// Class representing a USB device Mode1
     /// </summary>
     public class USBDeviceInfo
     {
@@ -27,6 +27,9 @@ namespace CG.LockUnlockTester
 
     }
 
+    /// <summary>
+    /// Class representing a USB device Mode2
+    /// </summary>
 
     public class GenericDeviceInfo
     {

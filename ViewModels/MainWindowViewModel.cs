@@ -1,20 +1,14 @@
-﻿using CG.LockUnlock;
-using GalaSoft.MvvmLight;
+﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using LockUnlock;
-using Microsoft.Win32;
 using NLog;
 using System;
 using System.Collections.Generic;
-using System.Management;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
 using System.Text;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Diagnostics;
 
 
 // https://stackoverflow.com/questions/3331043/get-list-of-connected-usb-devices
@@ -53,7 +47,7 @@ namespace CG.LockUnlockTester
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
 
-        // USB  -----------------------------------------
+        // USB by Registry -----------------------------------------
 
         private List<USBDeviceInfo> usbDevices = new List<USBDeviceInfo>();
 
@@ -89,7 +83,7 @@ namespace CG.LockUnlockTester
         public string USBStatusDescription { get => usbStatusDescription; set { usbStatusDescription = value; base.RaisePropertyChanged(nameof(USBStatusDescription)); } }
 
 
-        // ALL DEVICE ---------------------------------
+        // USB by API ---------------------------------
 
         public GenericDeviceInfo deviceSelected;
         public GenericDeviceInfo DeviceSelected
@@ -106,25 +100,29 @@ namespace CG.LockUnlockTester
             }
         }
 
-
         public RelayCommand DisableDeviceCommand { get; set; }
 
         public RelayCommand EnableDeviceCommand { get; set; }
         public RelayCommand RefreshAllDeviceListCommand { get; set; }
 
-
         public bool IsDisableDeviceCommandEnable { get; set; } = true;
         public bool IsEnableDeviceCommandEnable { get; set; } = true;
-
 
         public string deviceSelectedDescription;
         public string DeviceSelectedDescription { get => deviceSelectedDescription; set { deviceSelectedDescription = value; base.RaisePropertyChanged(nameof(DeviceSelectedDescription)); } }
 
+        public RelayCommand EnableAllDeviceCommand { get; set; }
+        public RelayCommand DisableAllDeviceCommand { get; set; }
+
+        private bool isDisableDeviceAllEnable;
+        public bool IsDisableDeviceAllEnable { get => isDisableDeviceAllEnable; set { isDisableDeviceAllEnable = value; base.RaisePropertyChanged(nameof(IsDisableDeviceAllEnable)); } }
+
+        private bool isEnableDeviceAllEnable = true;
+        public bool IsEnableDeviceAllEnable { get => isEnableDeviceAllEnable; set { isEnableDeviceAllEnable = value; base.RaisePropertyChanged(nameof(IsEnableDeviceAllEnable)); } }
 
 
 
         // USER ---------------------------------
-
 
         private bool isAdmin;
         public bool IsAdmin { get => isAdmin; set { isAdmin = value; base.RaisePropertyChanged(nameof(IsAdmin)); } }
@@ -134,6 +132,7 @@ namespace CG.LockUnlockTester
 
         public string userMessage;
         public string UserMessage { get => userMessage; set { userMessage = value; base.RaisePropertyChanged(nameof(UserMessage)); } }
+
 
 
         // VIRTUAL KEYBOARD ---------------------------------
@@ -146,7 +145,7 @@ namespace CG.LockUnlockTester
         public bool IsVirtualKeyboardEnable { get => isVirtualKeyboardEnable; set { isVirtualKeyboardEnable = value; base.RaisePropertyChanged(nameof(IsVirtualKeyboardEnable)); } }
 
         private bool isVirtualKeyboardDisable = true;
-        public bool IsVirtualKeyboardDisable{ get => isVirtualKeyboardDisable; set { isVirtualKeyboardDisable = value; base.RaisePropertyChanged(nameof(IsVirtualKeyboardDisable)); } }
+        public bool IsVirtualKeyboardDisable { get => isVirtualKeyboardDisable; set { isVirtualKeyboardDisable = value; base.RaisePropertyChanged(nameof(IsVirtualKeyboardDisable)); } }
 
 
         // DISABLE SHORTCUT  ---------------------------------
@@ -163,6 +162,10 @@ namespace CG.LockUnlockTester
 
         ManageShortcutCallback shortcutCallback;
 
+        /// <summary>
+        /// CST
+        /// </summary>
+        /// <param name="shortcutCallback"></param>
         public MainWindowViewModel(ManageShortcutCallback shortcutCallback)
         {
 
@@ -171,20 +174,21 @@ namespace CG.LockUnlockTester
 
             this.shortcutCallback = shortcutCallback;
 
-            this.USBDevices = GetUSBDevices();
+            this.USBDevices = LockUnlockHelper.GetUSBDevices();
 
             // BUTTONS ------------------------------
 
             // usb
-            DisableUSBCommand = new RelayCommand(DisableUSBStorageExecute);
-            EnableUSBCommand = new RelayCommand(EnableUSBStorageExecute);
+            DisableUSBCommand = new RelayCommand(DisableUSBStorageByRegistryExecute);
+            EnableUSBCommand = new RelayCommand(EnableUSBStorageByRegistryExecute);
             RefreshUSBListCommand = new RelayCommand(RefreshUSBListExecute);
 
             // all device
             DisableDeviceCommand = new RelayCommand(DisableDeviceCommandExecute);
             EnableDeviceCommand = new RelayCommand(EnableDeviceCommandExecute);
             RefreshAllDeviceListCommand = new RelayCommand(RefreshAllDeviceListExecute);
-
+            EnableAllDeviceCommand  = new RelayCommand(EnableAllDeviceExecute);
+            DisableAllDeviceCommand = new RelayCommand(DisableAllDeviceExecute);
 
             // Virtual keyboard
             DisableVirtualKeyboardCommand = new RelayCommand(DisableVirtualKeyboardExecute);
@@ -210,51 +214,9 @@ namespace CG.LockUnlockTester
 
             LoadPCAllDevices();
 
-
-            // 
-
-
-            //ReadRegisterValue();
-
-            //DriveInfo[] allDrives = DriveInfo.GetDrives();
-
-            //foreach (DriveInfo d in allDrives)
-            //{
-            //    Console.WriteLine("Drive {0}", d.Name);
-            //    Console.WriteLine("  Drive type: {0}", d.DriveType);
-            //    if (d.IsReady == true)
-            //    {
-            //        Console.WriteLine("  Volume label: {0}", d.VolumeLabel);
-            //        Console.WriteLine("  File system: {0}", d.DriveFormat);
-            //        Console.WriteLine(
-            //            "  Available space to current user:{0, 15} bytes",
-            //            d.AvailableFreeSpace);
-
-            //        Console.WriteLine(
-            //            "  Total available space:          {0, 15} bytes",
-            //            d.TotalFreeSpace);
-
-            //        Console.WriteLine(
-            //            "  Total size of drive:            {0, 15} bytes ",
-            //            d.TotalSize);
-            //    }
-            //}
-
-
-            //string[] keys = Microsoft.Win32.Registry.LocalMachine.OpenSubKey("Sofware").GetSubKeyNames();
-            //foreach (string key in keys)
-            //{
-            //    if (Key == "MySoftware")
-            //    {
-            //        Console.Write("Found");
-            //    }
-            //}
-
-            //var usbDriver = new List<USBDeviceInfo>();
-
         }
 
-        
+
 
         private void LoadPCAllDevices()
         {
@@ -266,19 +228,16 @@ namespace CG.LockUnlockTester
 
             AllDevices.Clear();
 
-            var allPcDevices = GetLogicalDevices();
+            var allPcDevices = LockUnlockHelper.GetLogicalDevices();
             Console.WriteLine($"There are {allPcDevices.Count} devices.");
 
             var countDevice = 1;
 
-            
             foreach (var usbDevice in allPcDevices)
             {
                 if (usbDevice.GetPropertyValue("DeviceID").ToString().Contains("USB")
                     && usbDevice.GetPropertyValue("Status").ToString().Contains("OK"))
                 {
-
-
 
                     // https://powershell.one/wmi/root/cimv2/cim_logicaldevice
 
@@ -288,31 +247,29 @@ namespace CG.LockUnlockTester
                         string instancePath = usbDevice.GetPropertyValue("DeviceID").ToString();
 
                         var description = (string)usbDevice.GetPropertyValue("Description");
-                        
-                        var name = usbDevice.GetPropertyValue("Name");
-                        if (name != null) {
-                            var t = name.ToString();
-                            if (t.ToLower().Trim() != description.ToLower().Trim()) {
-                                description = description + " [" + t + "]";
-                            }                            
-                        }
 
+                        var name = usbDevice.GetPropertyValue("Name");
+                        if (name != null)
+                        {
+                            var t = name.ToString();
+                            if (t.ToLower().Trim() != description.ToLower().Trim())
+                            {
+                                description = description + " [" + t + "]";
+                            }
+                        }
                         var stringStatusInfo = "not-set";
                         var statusInfo = usbDevice.GetPropertyValue("StatusInfo");
-                        if (statusInfo != null) {
+                        if (statusInfo != null)
+                        {
                             stringStatusInfo = statusInfo.ToString();
                         }
-
-
                         AllDevices.Add(new GenericDeviceInfo(countDevice, instancePath, mouseGuid, description, true, stringStatusInfo));
-                        //Console.WriteLine("mouseGuid={0}, instancePath={1}", mouseGuid, instancePath);
                         countDevice++;
                     }
                     catch (Exception ex)
                     {
                         Logger.Error(ex);
                     }
-                    //DeviceHelper.SetDeviceEnabled(mouseGuid, instancePath, true);
                 }
             }
 
@@ -325,165 +282,40 @@ namespace CG.LockUnlockTester
 
         private void ReadCurrentUsbStatus()
         {
-
-            this.CurrentUsbStatus = ReadUSBStatus();
+            this.CurrentUsbStatus = LockUnlockHelper.ReadUSBStatusInRegistry();
             USBStatusDescription = this.CurrentUsbStatus.ToString();
-
             IsDisableUSBCommandEnable = CurrentUsbStatus == USBStatus.Enable;
             IsEnableUSBCommand = CurrentUsbStatus == USBStatus.Disable;
-
             RefreshUSBListExecute();
         }
 
-        void ShowHideDetails(object sender, RoutedEventArgs e)
-        {
-            for (var vis = sender as Visual; vis != null; vis = VisualTreeHelper.GetParent(vis) as Visual)
-                if (vis is DataGridRow)
-                {
-                    var row = (DataGridRow)vis;
-                    row.DetailsVisibility = row.DetailsVisibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
-                    break;
-                }
-        }
-
-        public USBStatus ReadUSBStatus()
-        {
-            try
-            {
-                RegistryKey rk = Registry.LocalMachine;
-                var temp = rk.OpenSubKey("SYSTEM").OpenSubKey("CurrentControlSet").OpenSubKey("Services").OpenSubKey("USBSTOR");
-                var value = (int)temp.GetValue("Start");
-                return (USBStatus)value;
-            }
-            catch (Exception ex)
-            {
-                return USBStatus.NotSet;
-
-            }
-        }
-
-        private void ReadRegisterValue()
-        {
-            // HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\USBSTOR
-            RegistryKey rk = Registry.LocalMachine;
-            var t = rk.OpenSubKey("SYSTEM").OpenSubKey("CurrentControlSet").OpenSubKey("Services").OpenSubKey("USBSTOR");
-            var t1 = t.GetValue("Start");
-            // Print out the keys. 
-            PrintKeys(t);
-        }
-
-        static void PrintKeys(RegistryKey rkey)
-        {
-
-            // Retrieve all the subkeys for the specified key. 
-            String[] names = rkey.GetValueNames();
-
-
-            int icount = 0;
-
-            Console.WriteLine("Subkeys of " + rkey.Name);
-            Console.WriteLine("-----------------------------------------------");
-
-            // Print the contents of the array to the console. 
-            foreach (String s in names)
-            {
-                Console.WriteLine(s);
-
-                // The following code puts a limit on the number 
-                // of keys displayed.  Comment it out to print the 
-                // complete list. 
-                icount++;
-                if (icount >= 10)
-                    break;
-            }
-
-        }
-
-        static List<ManagementBaseObject> GetLogicalDevices()
-        {
-            List<ManagementBaseObject> devices = new List<ManagementBaseObject>();
-            ManagementObjectCollection collection;
-            using (var searcher = new ManagementObjectSearcher("root\\CIMV2", @"Select * From CIM_LogicalDevice"))
-                collection = searcher.Get();
-            foreach (var device in collection)
-            {
-                devices.Add(device);
-            }
-            collection.Dispose();
-            return devices;
-        }
-
-
         private void RefreshUSBListExecute()
         {
-            this.USBDevices = GetUSBDevices();
+            this.USBDevices = LockUnlockHelper.GetUSBDevices();
         }
 
-        private void DisableUSBStorageExecute()
+        private void DisableUSBStorageByRegistryExecute()
         {
-            if (!LockUnlockHelper.DisableUSBStorage())
+            if (!LockUnlockHelper.SetUSBbyRegistry(USBStatus.Disable))
             {
                 UserMessage = "Fail to disable the usb! You must run the app as admin";
             }
             ReadCurrentUsbStatus();
-
         }
 
-        private void EnableUSBStorageExecute()
+        private void EnableUSBStorageByRegistryExecute()
         {
-            if (!LockUnlockHelper.EnableUSBStorage())
+            if (!LockUnlockHelper.SetUSBbyRegistry(USBStatus.Enable))
             {
                 UserMessage = "Fail to enable the usb! You must run the app as admin";
             }
             ReadCurrentUsbStatus();
         }
 
-        static List<USBDeviceInfo> GetUSBDevices()
-        {
-            List<USBDeviceInfo> devices = new List<USBDeviceInfo>();
-
-            ManagementObjectCollection collection;
-
-            using (var searcher = new ManagementObjectSearcher(@"Select * From Win32_USBHub"))
-                collection = searcher.Get();
-
-            var count = 1;
-            foreach (var device in collection)
-            {
-                var deviceID = (string)device.GetPropertyValue("DeviceID");
-                var PNPDeviceID = (string)device.GetPropertyValue("PNPDeviceID");
-                var Description = (string)device.GetPropertyValue("Description");
-                var Status = (string)device.GetPropertyValue("Status");
-                devices.Add(new USBDeviceInfo(count, deviceID, PNPDeviceID, Description, Status, Status == "OK"));
-                count++;
-
-            }
-
-            foreach (ManagementObject queryObj in collection)
-            {
-
-                Console.WriteLine("-----------------------------------");
-                Console.WriteLine("Win32_USBHub instance");
-                Console.WriteLine("-----------------------------------");
-                Console.WriteLine("Availability: {0}", queryObj["Availability"]);
-                Console.WriteLine("Caption: {0}", queryObj["Caption"]);
-                Console.WriteLine("CurrentConfigValue: {0}", queryObj["CurrentConfigValue"]);
-                Console.WriteLine("NumberOfPorts: {0}", queryObj["NumberOfPorts"]);
-                Console.WriteLine("NumberOfConfigs: {0}", queryObj["NumberOfConfigs"]);
-                Console.WriteLine("CurrentConfigValue: {0}", queryObj["CurrentConfigValue"]);
-                Console.WriteLine("Status: {0}", queryObj["Status"]);
-                Console.WriteLine("StatusInfo: {0}", queryObj["StatusInfo"]);
-                Console.WriteLine("USBVersion: {0}", queryObj["USBVersion"]);
-                Console.WriteLine("PNPDeviceID: {0}", queryObj["PNPDeviceID"]);
-
-            }
-
-            collection.Dispose();
-            return devices;
-        }
 
 
-        #region ALL DEVICES
+
+        #region USB API
 
         private void RefreshAllDeviceListExecute()
         {
@@ -494,26 +326,60 @@ namespace CG.LockUnlockTester
         {
             try
             {
-                DeviceHelper.SetDeviceEnabled(DeviceSelected.ClassGuid, deviceSelected.DeviceID, true);
+                LockUnlockHelper.SetDeviceEnabled(DeviceSelected.ClassGuid, deviceSelected.DeviceID, true);
             }
             catch (Exception ex)
             {
+                Logger.Error(ex);
                 UserMessage = $"Fail to enable the {deviceSelected.Description}! Check if the LockUnlock library is compile in 64bit";
-            }            
+            }
         }
 
         private void DisableDeviceCommandExecute()
         {
             try
             {
-                DeviceHelper.SetDeviceEnabled(DeviceSelected.ClassGuid, deviceSelected.DeviceID, false);
+                LockUnlockHelper.SetDeviceEnabled(DeviceSelected.ClassGuid, deviceSelected.DeviceID, false);
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
                 UserMessage = $"Fail to disable the {deviceSelected.Description}!. Check if the LockUnlock library is compile in 64bit";
             }
-            
+
         }
 
+        private void DisableAllDeviceExecute()
+        {
+            try
+            {
+                LockUnlockHelper.SetUSBbyAPI(false);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+                UserMessage = $"Fail to disable the {deviceSelected.Description}!. Check if the LockUnlock library is compile in 64bit";
+            }
+
+            IsDisableDeviceAllEnable = false;
+            IsEnableDeviceAllEnable = true;
+        }
+
+        private void EnableAllDeviceExecute()
+        {
+            try
+            {
+                LockUnlockHelper.SetUSBbyAPI(true);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+                UserMessage = $"Fail to disable the {deviceSelected.Description}!. Check if the LockUnlock library is compile in 64bit";
+            }
+
+            IsDisableDeviceAllEnable = true;
+            IsEnableDeviceAllEnable = false;
+        }
 
         #endregion
 
@@ -524,18 +390,13 @@ namespace CG.LockUnlockTester
 
         private void EnableVirtualKeyboardExecute()
         {
-            string command = string.Empty;
             try
             {
-                command= "sc config \"TabletInputService\" start= disabled";
-                Process.Start("cmd.exe", "/C " + command);
-
-                command = "sc stop \"TabletInputService\"";
-                Process.Start("cmd.exe", "/C " + command);
-                
+                LockUnlockHelper.EnableVirtualKeyboard();
             }
-            catch (Exception ex) {
-                UserMessage = "Fail to execute command= " + command;
+            catch (Exception ex)
+            {
+                UserMessage = "Fail to EnableVirtualKeyboardExecute";
                 Logger.Error(ex);
             }
             IsVirtualKeyboardDisable = true;
@@ -544,19 +405,14 @@ namespace CG.LockUnlockTester
 
         private void DisableVirtualKeyboardExecute()
         {
-            string command = string.Empty;
+
             try
             {
-                command = "sc config \"TabletInputService\" start= auto";
-                Process.Start("cmd.exe", "/C " + command);
-
-                command = "sc start \"TabletInputService\"";
-                Process.Start("cmd.exe", "/C " + command);
-
+                LockUnlockHelper.DisableVirtualKeyboard();
             }
             catch (Exception ex)
             {
-                UserMessage = "Fail to execute command= " + command;
+                UserMessage = "Fail to DisableVirtualKeyboard";
                 Logger.Error(ex);
             }
 
