@@ -13,6 +13,10 @@ namespace LockUnlock
 
         #region USB Mode Registry
 
+        /// <summary>
+        /// Read all the USB device found in Win32_USBHub
+        /// </summary>
+        /// <returns></returns>
         public static List<USBDeviceInfo> GetUSBDevices()
         {
             List<USBDeviceInfo> devices = new List<USBDeviceInfo>();
@@ -54,6 +58,10 @@ namespace LockUnlock
             return devices;
         }
 
+        /// <summary>
+        /// Try to read the USB status by reading in windows register
+        /// </summary>
+        /// <returns></returns>
         public static USBStatus ReadUSBStatusInRegistry()
         {
             try
@@ -71,6 +79,10 @@ namespace LockUnlock
             return USBStatus.NotSet;
         }
 
+
+        /// <summary>
+        /// Try to disable the USB by writing in windows register
+        /// </summary>
         public static bool SetUSBbyRegistry(USBStatus status)
         {
             var result = false;
@@ -93,6 +105,9 @@ namespace LockUnlock
 
         #region USB Mode API
 
+        /// <summary>
+        /// Read all the USB device found in CIM_LogicalDevice
+        /// </summary>
         public static List<ManagementBaseObject> GetLogicalDevices()
         {
             List<ManagementBaseObject> devices = new List<ManagementBaseObject>();
@@ -107,6 +122,9 @@ namespace LockUnlock
             return devices;
         }
 
+        /// <summary>
+        /// Try to enable the all the USB by API
+        /// </summary>
         public static bool SetUSBbyAPI(bool enable)
         {
             var result = false;
@@ -143,6 +161,9 @@ namespace LockUnlock
 
         }
 
+        /// <summary>
+        /// Try to enable a single the USB by API
+        /// </summary>
         public static void SetDeviceEnabled(Guid mouseGuid, string DeviceID, bool enable)
         {
             DeviceHelper.SetDeviceEnabled(mouseGuid, DeviceID, enable);
@@ -153,6 +174,9 @@ namespace LockUnlock
 
         #region Virtual keyboard
 
+        /// <summary>
+        /// Try to enable the virtual keyboard
+        /// </summary>
         public static void EnableVirtualKeyboard()
         {
             var command = "sc config \"TabletInputService\" start= disabled";
@@ -161,6 +185,9 @@ namespace LockUnlock
             Process.Start("cmd.exe", "/C " + command);
         }
 
+        /// <summary>
+        /// Try to disable the virtual keyboard
+        /// </summary>
         public static void DisableVirtualKeyboard()
         {
             var command = "sc config \"TabletInputService\" start= auto";
@@ -196,6 +223,9 @@ namespace LockUnlock
         //}
 
 
+        /// <summary>
+        /// Try to disable the task manager in windows register
+        /// </summary>
         public static void SetTaskManagerByCmd(bool enable)
         {
             // https://www.digitalcitizen.life/easily-enable-or-disable-task-manager-using-taskmgred/
@@ -218,6 +248,9 @@ namespace LockUnlock
         #region TaskBar
 
 
+        /// <summary>
+        /// Try to hide/show the task bar in windows register
+        /// </summary>
         public static void SetTaskBarByCmd(bool enable)
         {
             // Disable

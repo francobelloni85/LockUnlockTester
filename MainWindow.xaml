@@ -122,7 +122,7 @@
                 </Grid>
             </StackPanel>
 
-            <!-- ALL DEVICE -->
+            <!-- USB ALL DEVICE -->
             <StackPanel>
 
                 <Label Margin="10"
@@ -154,7 +154,9 @@
                                 IsEnabled="{Binding IsEnableDeviceCommandEnable}">Enable selected</Button>
 
 
-                        <Border Height="1" Background="Black" Margin="10"></Border>
+                        <Border Height="1"
+                                Background="Black"
+                                Margin="10"></Border>
 
                         <Button Command="{Binding DisableAllDeviceCommand }"
                                 IsEnabled="{Binding IsDisableDeviceAllEnable}">Disable all</Button>
@@ -223,6 +225,60 @@
 
             </StackPanel>
 
+
+            <!-- DEV COM -->
+            <StackPanel Margin="0,10,0,0">
+
+                <StackPanel Orientation="Horizontal"
+                            Margin="10">
+                    <Label Margin="10"
+                           Content="DISABLE USB BY DEVCOM"
+                           FontSize="20"
+                           FontWeight="Black" />
+                    <Label VerticalAlignment="Center"
+                           FontSize="16"
+                           FontStyle="Oblique"
+                           Margin="10"
+                           Content="{Binding IsDEVCOMFound}"></Label>
+                </StackPanel>
+
+
+
+                <Grid Margin="10">
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*" />
+                        <ColumnDefinition Width="8*" />
+                    </Grid.ColumnDefinitions>
+
+
+                    <StackPanel>
+                        <Button Command="{Binding DisableDEVCOMCommand}"
+                                IsEnabled="{Binding IsDisableDEVCOMCommandEnable}">Disable all</Button>
+                        <Button Margin="0,10,0,0"
+                                Command="{Binding EnableDEVCOMCommand}"
+                                IsEnabled="{Binding IsEnableDEVCOMCommand}">Enable all</Button>
+                        <Button Margin="0,10,0,0"
+                                Command="{Binding RefreshDEVCOM}">Refresh</Button>
+                    </StackPanel>
+
+                    <TextBox Text="{Binding DEVCOMOutput}"
+                               FontSize="18"
+                               ScrollViewer.VerticalScrollBarVisibility="Auto"
+                               Grid.Column="1"
+                               MaxHeight="350"                             
+                               Margin="10,0,10,0"
+                               FontWeight="Bold">
+                    </TextBox>
+
+                </Grid>
+            </StackPanel>
+
+
             <!-- DISABLE KEYBOARD -->
             <StackPanel>
 
@@ -260,7 +316,7 @@
                         BorderThickness="1">
                     <TextBox Height="25"></TextBox>
                 </Border>
-                
+
                 <StackPanel Orientation="Horizontal"
                             Margin="10,10,0,0">
 
@@ -331,7 +387,7 @@
                             Width="250"
                             Command="{Binding EnableLimitAreaMouseCommand}"
                             IsEnabled="{Binding IsLimitAreaMouseEnable}">Enable mouse</Button>
-                    
+
                 </StackPanel>
             </StackPanel>
 

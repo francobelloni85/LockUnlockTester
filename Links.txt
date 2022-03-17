@@ -37,6 +37,8 @@ https://stackoverflow.com/questions/3361109/how-can-i-disable-windows-key-in-c
 
 
 
+Device Console (DevCon.exe) Examples
+https://docs.microsoft.com/en-us/windows-hardware/drivers/devtest/devcon-examples#ddk_example_3_find_hardware_ids_by_using_a_class_tools
 
 
 Lista USB con powershell
