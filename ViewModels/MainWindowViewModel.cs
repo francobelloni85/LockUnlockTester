@@ -35,16 +35,14 @@ namespace CG.LockUnlockTester
 
         // USB by Registry -----------------------------------------
 
-
-
         private List<USBDeviceInfo> usbDevices = new List<USBDeviceInfo>();
 
+        /// <summary>
+        /// Lista di tutti i device trovati con il metodo Registry
+        /// </summary>
         public List<USBDeviceInfo> USBDevices { get => usbDevices; set { usbDevices = value; base.RaisePropertyChanged(nameof(USBDevices)); } }
 
-        private List<GenericDeviceInfo> allDevices = new List<GenericDeviceInfo>();
-
-        public List<GenericDeviceInfo> AllDevices { get => allDevices; set { allDevices = value; base.RaisePropertyChanged(nameof(AllDevices)); } }
-
+       
         public RelayCommand DisableUSBCommand { get; set; }
         public RelayCommand EnableUSBCommand { get; set; }
         public RelayCommand RefreshUSBListCommand { get; set; }
@@ -72,6 +70,13 @@ namespace CG.LockUnlockTester
 
 
         // USB by API ---------------------------------
+
+        private List<GenericDeviceInfo> allDevices = new List<GenericDeviceInfo>();
+
+        /// <summary>
+        /// LIsta di tutti i device trovati con il metodo API
+        /// </summary>
+        public List<GenericDeviceInfo> AllDevices { get => allDevices; set { allDevices = value; base.RaisePropertyChanged(nameof(AllDevices)); } }
 
 
         public GenericDeviceInfo deviceSelected;
@@ -113,9 +118,17 @@ namespace CG.LockUnlockTester
 
         // DEVCOM
 
+        /// <summary>
+        /// Lista di tutti i device letti con il metodo 3 DevCon
+        /// </summary>
         public ObservableCollection<DevconUSB> USBDevconList { get; set; } = new ObservableCollection<DevconUSB>();
 
-        public DevconUSB usbDevconSelected;
+
+        private DevconUSB usbDevconSelected;
+        
+        /// <summary>
+        /// L'usb che è al momento selezionata
+        /// </summary>
         public DevconUSB USBDevconSelected
         {
             get => usbDevconSelected;
@@ -126,33 +139,61 @@ namespace CG.LockUnlockTester
             }
         }
 
+        /// <summary>
+        /// Deprecated
+        /// </summary>  
         public RelayCommand DisableDEVCOMCommand { get; set; }
 
+        /// <summary>
+        /// Deprecated
+        /// </summary>  
         public RelayCommand EnableDEVCOMCommand { get; set; }
 
+        /// <summary>
+        /// Aggiorna la lista
+        /// </summary>
         public RelayCommand RefreshDEVCOM { get; set; }
 
         private bool isEnableDEVCOMCommand;
+
+        /// <summary>
+        /// abilita tutto - deprecato
+        /// </summary>
         public bool IsEnableDEVCOMCommand { get => isEnableDEVCOMCommand; set { isEnableDEVCOMCommand = value; base.RaisePropertyChanged(nameof(IsEnableDEVCOMCommand)); } }
 
         private bool isDisableDEVCOMCommandEnable = true;
+
+        /// <summary>
+        /// deprecato - disabilita tutto 
+        /// </summary>
         public bool IsDisableDEVCOMCommandEnable { get => isDisableDEVCOMCommandEnable; set { isDisableDEVCOMCommandEnable = value; base.RaisePropertyChanged(nameof(IsDisableDEVCOMCommandEnable)); } }
 
         private string isDEVCOMFound;
+        /// <summary>
+        /// Mi indica se ho trovato il file devcon.exe
+        /// </summary>
         public string IsDEVCOMFound { get => isDEVCOMFound; set { isDEVCOMFound = value; base.RaisePropertyChanged(nameof(IsDEVCOMFound)); } }
 
         public string devcomOutput;
+        /// <summary>
+        /// Output del comando devcom.exe
+        /// </summary>  
         public string DEVCOMOutput { get => devcomOutput; set { devcomOutput = value; base.RaisePropertyChanged(nameof(DEVCOMOutput)); } }
 
-        private string pathFile_listusbtxt = string.Empty;
 
         // Single disable
 
         public bool IsDisableDeviceDevconEnable { get; set; } = true;
         public bool IsEnableDeviceDevconEnable { get; set; } = true;
 
+        /// <summary>
+        /// Abilita l'usb selezionata
+        /// </summary> 
         public RelayCommand DisableDeviceDevconCommand { get; set; }
 
+        /// <summary>
+        /// Disabilita l'usb selezionata
+        /// </summary>  
         public RelayCommand EnableDeviceDevconCommand { get; set; }
 
         #endregion
@@ -161,28 +202,53 @@ namespace CG.LockUnlockTester
         // USER ---------------------------------
 
         private bool isAdmin;
+        /// <summary>
+        /// Mi indica se l'utente è admin
+        /// </summary>
         public bool IsAdmin { get => isAdmin; set { isAdmin = value; base.RaisePropertyChanged(nameof(IsAdmin)); } }
 
         public string userName;
+
+        /// <summary>
+        /// IL nome dell'utente che sta usando windows
+        /// </summary>
         public string UserName { get => userName; set { userName = value; base.RaisePropertyChanged(nameof(UserName)); } }
 
-        public string userMessage;
-        public string UserMessage { get => userMessage; set { userMessage = value; base.RaisePropertyChanged(nameof(UserMessage)); } }
+        public string messageForTheUser;
+        
+        /// <summary>
+        /// Messaggio da far comparere all'utente
+        /// </summary>
+        public string MessageForTheUser { get => messageForTheUser; set { messageForTheUser = value; base.RaisePropertyChanged(nameof(MessageForTheUser)); } }
 
 
 
         // VIRTUAL KEYBOARD ---------------------------------
 
         #region VIRTUAL KEYBOARD
-
+        /// <summary>
+        /// Abilita la tastiare virtuale
+        /// </summary>
         public RelayCommand DisableVirtualKeyboardCommand { get; set; }
-
+        
+        /// <summary>
+        /// Disabilita la tastiera virtuale
+        /// </summary>
         public RelayCommand EnableVirtualKeyboardCommand { get; set; }
 
+        
         private bool isVirtualKeyboardEnable;
+        /// <summary>
+        /// Mi dice se il punsate deve essere enable per la attivare il comando che abilita la tastiera
+        /// </summary>
+
         public bool IsVirtualKeyboardEnable { get => isVirtualKeyboardEnable; set { isVirtualKeyboardEnable = value; base.RaisePropertyChanged(nameof(IsVirtualKeyboardEnable)); } }
 
         private bool isVirtualKeyboardDisable = true;
+        
+        /// <summary>
+        /// Mi dice se il punsate deve essere enable per la attivare il comando che disabilita la tastiera
+        /// </summary>
         public bool IsVirtualKeyboardDisable { get => isVirtualKeyboardDisable; set { isVirtualKeyboardDisable = value; base.RaisePropertyChanged(nameof(IsVirtualKeyboardDisable)); } }
 
         #endregion
@@ -191,8 +257,14 @@ namespace CG.LockUnlockTester
 
         #region KEYBOARD LISTENER
 
+        /// <summary>
+        /// Comando per attivare il keylogger
+        /// </summary>
         public RelayCommand CreateKeyLoggerCommand { get; set; }
 
+        /// <summary>
+        /// Comando per disabilitare il keylogger
+        /// </summary>
         public RelayCommand DisposeKeyLoggerCommand { get; set; }
 
         private bool isCreateKeyLoggerEnable = true;
@@ -201,6 +273,9 @@ namespace CG.LockUnlockTester
         private bool isKeyLoggerAlive;
         public bool IsKeyLoggerAlive { get => isKeyLoggerAlive; set { isKeyLoggerAlive = value; base.RaisePropertyChanged(nameof(IsKeyLoggerAlive)); } }
 
+        /// <summary>
+        /// Classe che per gestire il key logger
+        /// </summary>
         KeyboardListener keyboardListener;
 
         /// <summary>
@@ -248,14 +323,28 @@ namespace CG.LockUnlockTester
 
         #region TASK MANAGER
 
+        /// <summary>
+        /// Cpmando per disabilitare il task manager
+        /// </summary>
         public RelayCommand DisableTaskManagerCommand { get; set; }
 
+        /// <summary>
+        /// Comando per abilitare il task manager
+        /// </summary>
         public RelayCommand EnableTaskManagerCommand { get; set; }
 
         private bool isTaskManagerDisable = true;
+
+        /// <summary>
+        /// Mi indica lo stato del pulsate
+        /// </summary>
         public bool IsTaskManagerDisable { get => isTaskManagerDisable; set { isTaskManagerDisable = value; base.RaisePropertyChanged(nameof(IsTaskManagerDisable)); } }
 
         private bool isTaskManagerEnable;
+        
+        /// <summary>
+        /// Mi indica lo stato del pulsate
+        /// </summary>
         public bool IsTaskManagerEnable { get => isTaskManagerEnable; set { isTaskManagerEnable = value; base.RaisePropertyChanged(nameof(IsTaskManagerEnable)); } }
 
         #endregion
@@ -264,14 +353,28 @@ namespace CG.LockUnlockTester
 
         #region TASK BAR
 
+        /// <summary>
+        /// Comando per abilitare
+        /// </summary>
         public RelayCommand DisableTaskBarCommand { get; set; }
 
+        /// <summary>
+        /// Comando per disabilitare
+        /// </summary>
         public RelayCommand EnableTaskBarCommand { get; set; }
 
         private bool isTaskBarDisable = true;
+
+        /// <summary>
+        /// Mi indica lo stato del pulsate
+        /// </summary>
         public bool IsTaskBarDisable { get => isTaskBarDisable; set { isTaskBarDisable = value; base.RaisePropertyChanged(nameof(IsTaskBarDisable)); } }
 
         private bool isTaskbarEnable;
+
+        /// <summary>
+        /// Mi indica lo stato del pulsate
+        /// </summary>
         public bool IsTaskbarEnable { get => isTaskbarEnable; set { isTaskbarEnable = value; base.RaisePropertyChanged(nameof(IsTaskbarEnable)); } }
 
         #endregion
@@ -284,14 +387,29 @@ namespace CG.LockUnlockTester
 
         private int MouseYLimit = -1;
 
+        /// <summary>
+        /// Comando per abilitare
+        /// </summary>
         public RelayCommand DisableLimitAreaMouseCommand { get; set; }
 
+        /// <summary>
+        /// Comando per disabilitare
+        /// </summary>
         public RelayCommand EnableLimitAreaMouseCommand { get; set; }
 
         private bool isLimitAreaMouseDisable;
+
+        /// <summary>
+        /// Mi indica lo stato del pulsate
+        /// </summary>
         public bool IsLimitAreaMouseDisable { get => isLimitAreaMouseDisable; set { isLimitAreaMouseDisable = value; base.RaisePropertyChanged(nameof(IsLimitAreaMouseDisable)); } }
 
+
         private bool isLimitAreaMouseEnable = true;
+
+        /// <summary>
+        /// Mi indica lo stato del pulsate
+        /// </summary>
         public bool IsLimitAreaMouseEnable { get => isLimitAreaMouseEnable; set { isLimitAreaMouseEnable = value; base.RaisePropertyChanged(nameof(IsLimitAreaMouseEnable)); } }
 
         public static System.Windows.Point GetMousePositionWindowsForms()
@@ -304,6 +422,9 @@ namespace CG.LockUnlockTester
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool GetCursorPos(out Point pPoint);
 
+        /// <summary>
+        /// Mi rappresenta le coordinate
+        /// </summary>
         public struct Point
         {
             public int X;
@@ -403,7 +524,7 @@ namespace CG.LockUnlockTester
                     }
                     else
                     {
-                        UserMessage = "devcon.exe not found!";
+                        MessageForTheUser = "devcon.exe not found!";
                         IsEnableDeviceDevconEnable = false;
                         IsDisableDeviceDevconEnable = false;
                     }
@@ -448,7 +569,7 @@ namespace CG.LockUnlockTester
         {
             if (!LockUnlockHelper.SetUSBbyRegistry(USBStatus.Disable))
             {
-                UserMessage = "Fail to disable the usb! You must run the app as admin";
+                MessageForTheUser = "Fail to disable the usb! You must run the app as admin";
             }
             ReadCurrentUsbStatus();
         }
@@ -457,7 +578,7 @@ namespace CG.LockUnlockTester
         {
             if (!LockUnlockHelper.SetUSBbyRegistry(USBStatus.Enable))
             {
-                UserMessage = "Fail to enable the usb! You must run the app as admin";
+                MessageForTheUser = "Fail to enable the usb! You must run the app as admin";
             }
             ReadCurrentUsbStatus();
         }
@@ -542,7 +663,7 @@ namespace CG.LockUnlockTester
             catch (Exception ex)
             {
                 Logger.Error(ex);
-                UserMessage = $"Fail to enable the {deviceSelected.Description}! Check if the LockUnlock library is compile in 64bit";
+                MessageForTheUser = $"Fail to enable the {deviceSelected.Description}! Check if the LockUnlock library is compile in 64bit";
             }
         }
 
@@ -555,7 +676,7 @@ namespace CG.LockUnlockTester
             catch (Exception ex)
             {
                 Logger.Error(ex);
-                UserMessage = $"Fail to disable the {deviceSelected.Description}!. Check if the LockUnlock library is compile in 64bit";
+                MessageForTheUser = $"Fail to disable the {deviceSelected.Description}!. Check if the LockUnlock library is compile in 64bit";
             }
 
         }
@@ -569,7 +690,7 @@ namespace CG.LockUnlockTester
             catch (Exception ex)
             {
                 Logger.Error(ex);
-                UserMessage = $"Fail to disable the {deviceSelected.Description}!. Check if the LockUnlock library is compile in 64bit";
+                MessageForTheUser = $"Fail to disable the {deviceSelected.Description}!. Check if the LockUnlock library is compile in 64bit";
             }
 
             IsDisableDeviceAllEnable = false;
@@ -585,7 +706,7 @@ namespace CG.LockUnlockTester
             catch (Exception ex)
             {
                 Logger.Error(ex);
-                UserMessage = $"Fail to disable the {deviceSelected.Description}!. Check if the LockUnlock library is compile in 64bit";
+                MessageForTheUser = $"Fail to disable the {deviceSelected.Description}!. Check if the LockUnlock library is compile in 64bit";
             }
 
             IsDisableDeviceAllEnable = true;
@@ -682,7 +803,7 @@ namespace CG.LockUnlockTester
             }
             catch (Exception ex)
             {
-                UserMessage = "Fail to EnableVirtualKeyboardExecute";
+                MessageForTheUser = "Fail to EnableVirtualKeyboardExecute";
                 Logger.Error(ex);
             }
             IsVirtualKeyboardDisable = true;
@@ -698,7 +819,7 @@ namespace CG.LockUnlockTester
             }
             catch (Exception ex)
             {
-                UserMessage = "Fail to DisableVirtualKeyboard";
+                MessageForTheUser = "Fail to DisableVirtualKeyboard";
                 Logger.Error(ex);
             }
 
@@ -783,7 +904,7 @@ namespace CG.LockUnlockTester
             catch (Exception ex)
             {
                 Logger.Error(ex);
-                UserMessage = $"Fail to enable the TaskManager";
+                MessageForTheUser = $"Fail to enable the TaskManager";
             }
             IsTaskManagerDisable = true;
             IsTaskManagerEnable = false;
@@ -798,7 +919,7 @@ namespace CG.LockUnlockTester
             catch (Exception ex)
             {
                 Logger.Error(ex);
-                UserMessage = $"Fail to disable the TaskManager";
+                MessageForTheUser = $"Fail to disable the TaskManager";
             }
 
             IsTaskManagerDisable = false;
@@ -819,7 +940,7 @@ namespace CG.LockUnlockTester
             catch (Exception ex)
             {
                 Logger.Error(ex);
-                UserMessage = $"Fail to disable the Taskbar";
+                MessageForTheUser = $"Fail to disable the Taskbar";
             }
             IsTaskBarDisable = true;
             IsTaskbarEnable = false;
@@ -834,7 +955,7 @@ namespace CG.LockUnlockTester
             catch (Exception ex)
             {
                 Logger.Error(ex);
-                UserMessage = $"Fail to disable the Taskbar";
+                MessageForTheUser = $"Fail to disable the Taskbar";
             }
             IsTaskBarDisable = false;
             IsTaskbarEnable = true;
