@@ -414,9 +414,6 @@ namespace CG.LockUnlockTester
         }
 
 
-
-
-
         #region USB Registry
 
         private void ReadCurrentUsbStatus()
