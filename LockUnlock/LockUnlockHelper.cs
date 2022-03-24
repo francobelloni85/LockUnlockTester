@@ -174,9 +174,17 @@ namespace LockUnlock
 
         #region USB Devcon
 
+        /// <summary>
+        /// Output file
+        /// </summary>
         public static string devconFileOutput = "devcon_output.txt";
 
 
+        /// <summary>
+        /// Get the device list read by de the devcon tool
+        /// The result is save in the devconFileOutput file
+        /// </summary>
+        /// <returns></returns>
         public static List<DevconUSB> GetDevConUSBList()
         {
             var result = new List<DevconUSB>();
@@ -216,7 +224,11 @@ namespace LockUnlock
             return result;
         }
 
-
+        /// <summary>
+        /// Enable or disable the USB device with DevCon
+        /// </summary>
+        /// <param name="HardwareID"></param>
+        /// <param name="enable"></param>
         public static void EnableDeviceDevCon(string HardwareID, bool enable)
         {
 
@@ -229,6 +241,10 @@ namespace LockUnlock
 
         }
 
+        /// <summary>
+        /// Open the shell to execute a command
+        /// </summary>
+        /// <param name="command"></param>
         private static void ExecuteCommand(string command)
         {
             int exitCode;

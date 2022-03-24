@@ -2,7 +2,9 @@
 {
     public enum USBStatus { NotSet = 0, Enable = 3, Disable = 4 }
 
-
+    /// <summary>
+    /// Tasti che può prerere l'utente. Ricopiata dalla libreria di windows
+    /// </summary>
     public enum Keys
     {
         //

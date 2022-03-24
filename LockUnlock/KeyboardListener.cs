@@ -8,6 +8,11 @@ using System.Collections.Generic;
 
 // https://stackoverflow.com/questions/1639331/using-global-keyboard-hook-wh-keyboard-ll-in-wpf-c-sharp
 
+/// <summary>
+///  Libreria key logger che permette di ascoltare i tasti permuti.
+///  La funzione principale è LowLevelKeyboardProc
+///  Li si decice se la sequanza di tasti è accettabile oppure si interrompe non consentendo all'utente di proseguire con i tasti.
+/// </summary>
 namespace LockUnlock
 {
 

@@ -3,6 +3,9 @@
 namespace LockUnlock
 {
 
+    /// <summary>
+    /// Support class when devices are read with DevCon
+    /// </summary>
     public class DevconUSB
     {
         public int Count { get; private set; }
@@ -49,7 +52,7 @@ namespace LockUnlock
     }
 
     /// <summary>
-    /// Class representing a USB device Mode2
+    /// Class representing a USB device Mode by API
     /// </summary>
 
     public class GenericDeviceInfo
