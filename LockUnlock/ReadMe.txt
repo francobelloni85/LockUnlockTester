@@ -27,5 +27,8 @@ for the shell to execute the script.
 
 *********************
 
+Per il mouse c'è un timer che controlla che la posizione del mouse. 
+Se questa  non sia oltre il limite (troppo vicino alla barra di windows), lo riporta un piu in alto. 
+è un hack perchè nn è possibile far scomparire la taskbar.
 
 

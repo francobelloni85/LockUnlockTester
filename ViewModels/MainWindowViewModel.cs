@@ -219,14 +219,27 @@ namespace CG.LockUnlockTester
         // DISABLE SHORTCUT  ---------------------------------
 
         #region SHORTCUT
+
+        /// <summary>
+        /// Deprecated
+        /// </summary>       
         public RelayCommand DisableShortcutCommand { get; set; }
 
+        /// <summary>
+        /// Deprecated
+        /// </summary>
         public RelayCommand EnableShortcutCommand { get; set; }
 
         private bool isDisableShortcut;
+        /// <summary>
+        /// Deprecated
+        /// </summary>
         public bool IsDisableShortcut { get => isDisableShortcut; set { isDisableShortcut = value; base.RaisePropertyChanged(nameof(IsDisableShortcut)); } }
 
         private bool isEnableShortcut;
+        /// <summary>
+        /// Deprecated
+        /// </summary>
         public bool IsEnableShortcut { get => isEnableShortcut; set { isEnableShortcut = value; base.RaisePropertyChanged(nameof(IsEnableShortcut)); } }
 
         #endregion
@@ -266,6 +279,7 @@ namespace CG.LockUnlockTester
         // DISABLE MOUSE LIMIT AREA ---------------------------------
 
         #region MOUSE LIMIT AREA
+
         private DispatcherTimer dispatcherTimerMousePosition;
 
         private int MouseYLimit = -1;
@@ -721,7 +735,7 @@ namespace CG.LockUnlockTester
         }
 
         /// <summary>
-        /// NOT USED
+        /// NOT USED - deprecated
         /// </summary>
         private void EnableShortcutExecute()
         {
@@ -731,7 +745,7 @@ namespace CG.LockUnlockTester
         }
 
         /// <summary>
-        /// NOT USED
+        /// NOT USED  - deprecated
         /// </summary>
         private void DisableShortcutExecute()
         {
@@ -741,7 +755,7 @@ namespace CG.LockUnlockTester
         }
 
         /// <summary>
-        /// NOT USED
+        /// NOT USED  - deprecated
         /// </summary>
         public void ManageShortcut(bool enable)
         {
