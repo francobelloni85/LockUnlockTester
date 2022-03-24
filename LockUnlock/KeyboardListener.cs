@@ -47,6 +47,10 @@ namespace LockUnlock
 
             // Assign the asynchronous callback event
             hookedKeyboardCallbackAsync = new KeyboardCallbackAsync(KeyboardListener_KeyboardCallbackAsync);
+
+            // When the key-logger is created it's disable to press multiple keys 
+            KeysToAvoid = DefaultKeysToAvoid;
+
         }
 
         /// <summary>

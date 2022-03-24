@@ -2,6 +2,27 @@
 
 namespace LockUnlock
 {
+
+    public class DevconUSB
+    {
+        public int Count { get; private set; }
+        public string HardwareID { get; private set; }
+        public string Name { get; private set; }
+        public string IsRunning { get; private set; }
+
+        public string Type { get; private set; }
+
+        public DevconUSB(int count, string hardwareID, string name, string isRunning)
+        {
+            this.Count = count;
+            this.HardwareID = hardwareID;
+            this.Name = name;
+            this.IsRunning = isRunning;
+        }
+
+
+    }
+
     /// <summary>
     /// Class representing a USB device Mode1
     /// </summary>

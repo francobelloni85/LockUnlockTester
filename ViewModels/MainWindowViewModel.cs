@@ -4,6 +4,7 @@ using LockUnlock;
 using NLog;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -127,6 +128,19 @@ namespace CG.LockUnlockTester
 
         // DEVCOM
 
+        public ObservableCollection<DevconUSB> USBDevconList { get; set; } = new ObservableCollection<DevconUSB>();
+
+        public DevconUSB usbDevconSelected;
+        public DevconUSB USBDevconSelected
+        {
+            get => usbDevconSelected;
+            set
+            {
+                usbDevconSelected = value;
+                base.RaisePropertyChanged(nameof(USBDevconSelected));
+            }
+        }
+
         public RelayCommand DisableDEVCOMCommand { get; set; }
 
         public RelayCommand EnableDEVCOMCommand { get; set; }
@@ -139,8 +153,6 @@ namespace CG.LockUnlockTester
         private bool isDisableDEVCOMCommandEnable = true;
         public bool IsDisableDEVCOMCommandEnable { get => isDisableDEVCOMCommandEnable; set { isDisableDEVCOMCommandEnable = value; base.RaisePropertyChanged(nameof(IsDisableDEVCOMCommandEnable)); } }
 
-        private bool isDEVCOMAvalable = false;
-
         private string isDEVCOMFound;
         public string IsDEVCOMFound { get => isDEVCOMFound; set { isDEVCOMFound = value; base.RaisePropertyChanged(nameof(IsDEVCOMFound)); } }
 
@@ -148,6 +160,16 @@ namespace CG.LockUnlockTester
         public string DEVCOMOutput { get => devcomOutput; set { devcomOutput = value; base.RaisePropertyChanged(nameof(DEVCOMOutput)); } }
 
         private string pathFile_listusbtxt = string.Empty;
+
+        // Single disable
+
+        public bool IsDisableDeviceDevconEnable { get; set; } = true;
+        public bool IsEnableDeviceDevconEnable { get; set; } = true;
+
+        public RelayCommand DisableDeviceDevconCommand { get; set; }
+
+        public RelayCommand EnableDeviceDevconCommand { get; set; }
+
 
         // USER ---------------------------------
 
@@ -277,6 +299,8 @@ namespace CG.LockUnlockTester
             }
         }
 
+        // COSTRUTTORE ------------------------------
+
         /// <summary>
         /// CST
         /// </summary>
@@ -310,6 +334,8 @@ namespace CG.LockUnlockTester
             DisableDEVCOMCommand = new RelayCommand(DisableDEVCOMCommandExecute);
             EnableDEVCOMCommand = new RelayCommand(EnableDEVCOMCommandExecute);
             RefreshDEVCOM = new RelayCommand(RefreshDEVCOMExecute);
+            DisableDeviceDevconCommand = new RelayCommand(DisableDeviceDevconExecute);
+            EnableDeviceDevconCommand = new RelayCommand(EnableDeviceDevconExecute);
 
             // Virtual keyboard
             DisableVirtualKeyboardCommand = new RelayCommand(DisableVirtualKeyboardExecute);
@@ -366,15 +392,13 @@ namespace CG.LockUnlockTester
             {
                 if (File.Exists("devcon.exe"))
                 {
-                    //ExecuteCommand("devcon classes > classes.txt");
-                    // Salva tutti i drive usb trovati nel file listusb.txt
-                    ExecuteCommand("devcon status USB\\* > listusb.txt");
+                    ReadUSBListByDevCon();
                 }
-
-                var startupPath = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
-                pathFile_listusbtxt = Path.Combine(startupPath, "listusb.txt");
-                ReadDEVCOMCommandResult();
-
+                else {
+                    UserMessage = "devcon.exe not found!";
+                    IsEnableDeviceDevconEnable = false;
+                    IsDisableDeviceDevconEnable = false;
+                }
             }
             catch (Exception ex)
             {
@@ -385,6 +409,7 @@ namespace CG.LockUnlockTester
 
 
         }
+
 
         private void LoadPCAllDevices()
         {
@@ -554,92 +579,80 @@ namespace CG.LockUnlockTester
 
         #region DEVCOM
 
-        private void ReadDEVCOMCommandResult()
-        {
 
-            if (File.Exists("listusb.txt"))
-            {
-                DEVCOMOutput = File.ReadAllText(pathFile_listusbtxt);
-                IsDEVCOMFound = "ok";
-                isDEVCOMAvalable = true;
-            }
-            else
+
+        private void ReadUSBListByDevCon()
+        {
+            var temp = LockUnlockHelper.GetDevConUSBList();
+
+            USBDevconList.Clear();
+            foreach (var item in temp) {
+                USBDevconList.Add(item);
+            }              
+
+            if (USBDevconList.Count == 0)
             {
                 DEVCOMOutput = "devcon.exe not working!";
                 IsDEVCOMFound = "not found";
             }
         }
 
+
+
+
+        private void EnableDeviceDevconExecute()
+        {
+            ManageDeviceByDevcon(true);
+        }
+
+        // https://docs.microsoft.com/en-us/windows-hardware/drivers/devtest/devcon-examples#example-31-disable-devices-by-device-instance-id
+        private void DisableDeviceDevconExecute()
+        {
+            ManageDeviceByDevcon(false);
+        }
+
+        public void ManageDeviceByDevcon(bool enable) {
+
+            LockUnlockHelper.EnableDeviceDevCon(USBDevconSelected.HardwareID, enable);
+            RefreshDEVCOMExecute();
+        }
+
+
         private void RefreshDEVCOMExecute()
         {
-            if (isDEVCOMAvalable)
-            {
-                ReadDEVCOMCommandResult();
-            }
-            else
-            {
-                DEVCOMOutput = "devcon.exe not working!";
-                IsDEVCOMFound = "not found";
-            }
+            ReadUSBListByDevCon();
         }
 
         private void EnableDEVCOMCommandExecute()
         {
-            if (isDEVCOMAvalable)
-            {
-                ExecuteCommand("devcon enable USB* > listusb.txt");
-                ReadDEVCOMCommandResult();
-            }
-            else
-            {
-                DEVCOMOutput = "devcon.exe not working!";
-                IsDEVCOMFound = "not found";
-            }
+            //if (isDEVCOMAvalable)
+            //{
+            //    ExecuteCommand("devcon enable USB* > listusb.txt");
+            //    ReadDEVCOMCommandResult();
+            //}
+            //else
+            //{
+            //    DEVCOMOutput = "devcon.exe not working!";
+            //    IsDEVCOMFound = "not found";
+            //}
         }
 
         private void DisableDEVCOMCommandExecute()
         {
 
-            if (isDEVCOMAvalable)
-            {
-                ExecuteCommand("devcon disable USB* > listusb.txt");
-                ReadDEVCOMCommandResult();
-            }
-            else
-            {
-                DEVCOMOutput = "devcon.exe not working!";
-                IsDEVCOMFound = "not found";
-            }
+            //if (isDEVCOMAvalable)
+            //{
+            //    ExecuteCommand("devcon disable USB* > listusb.txt");
+            //    ReadDEVCOMCommandResult();
+            //}
+            //else
+            //{
+            //    DEVCOMOutput = "devcon.exe not working!";
+            //    IsDEVCOMFound = "not found";
+            //}
         }
 
-        static void ExecuteCommand(string command)
-        {
-            int exitCode;
-            ProcessStartInfo processInfo;
-            Process process;
 
-            processInfo = new ProcessStartInfo("cmd.exe", "/c " + command);
-            processInfo.CreateNoWindow = true;
-            processInfo.UseShellExecute = false;
-            // *** Redirect the output ***
-            processInfo.RedirectStandardError = true;
-            processInfo.RedirectStandardOutput = true;
-
-            process = Process.Start(processInfo);
-            process.WaitForExit();
-
-            // *** Read the streams ***
-            // Warning: This approach can lead to deadlocks, see Edit #2
-            string output = process.StandardOutput.ReadToEnd();
-            string error = process.StandardError.ReadToEnd();
-
-            exitCode = process.ExitCode;
-
-            Console.WriteLine("output>>" + (String.IsNullOrEmpty(output) ? "(none)" : output));
-            Console.WriteLine("error>>" + (String.IsNullOrEmpty(error) ? "(none)" : error));
-            Console.WriteLine("ExitCode: " + exitCode.ToString(), "ExecuteCommand");
-            process.Close();
-        }
 
         #endregion
 
@@ -687,13 +700,14 @@ namespace CG.LockUnlockTester
         private void CreateKeyLoggerExecute()
         {
             keyboardListener = new KeyboardListener();
+
             keyboardListener.KeyDown += new RawKeyEventHandler(KeyboardListener_KeyDown);
 
             IsCreateKeyLoggerEnable = false;
             IsKeyLoggerAlive = true;
 
-            IsEnableShortcut = true;
-            IsDisableShortcut = false;
+            //IsEnableShortcut = true;
+            //IsDisableShortcut = false;
         }
 
         private void DisposeKeyLoggerExecute()
@@ -703,16 +717,16 @@ namespace CG.LockUnlockTester
             IsCreateKeyLoggerEnable = true;
             IsKeyLoggerAlive = false;
 
-            IsEnableShortcut = false;
-            IsDisableShortcut = false;
+            //IsEnableShortcut = false;
+            //IsDisableShortcut = false;
         }
 
 
         private void EnableShortcutExecute()
         {
-            ManageShortcut(true);
-            IsEnableShortcut = false;
-            IsDisableShortcut = true;
+            //ManageShortcut(true);
+            //IsEnableShortcut = false;
+            //IsDisableShortcut = true;
         }
 
         private void DisableShortcutExecute()

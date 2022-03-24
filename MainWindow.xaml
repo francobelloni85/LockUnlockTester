@@ -218,9 +218,6 @@
                         </ListView>
                     </GroupBox>
 
-
-
-
                 </Grid>
 
             </StackPanel>
@@ -257,30 +254,87 @@
 
 
                     <StackPanel>
-                        <Button Command="{Binding DisableDEVCOMCommand}"
-                                IsEnabled="{Binding IsDisableDEVCOMCommandEnable}">Disable all</Button>
+
+
+                        <Button Command="{Binding DisableDeviceDevconCommand }"
+                                IsEnabled="{Binding IsDisableDeviceDevconEnable}">Disable selected</Button>
                         <Button Margin="0,10,0,0"
+                                Command="{Binding EnableDeviceDevconCommand}"
+                                IsEnabled="{Binding IsEnableDeviceDevconEnable}">Enable selected</Button>
+
+                        <Border Height="1"
+                                Background="Black"
+                                Margin="10"></Border>
+                        
+                        <Button Visibility="Hidden" Command="{Binding DisableDEVCOMCommand}"
+                                IsEnabled="{Binding IsDisableDEVCOMCommandEnable}">Disable all</Button>
+                        <Button Visibility="Hidden" Margin="0,10,0,0"
                                 Command="{Binding EnableDEVCOMCommand}"
                                 IsEnabled="{Binding IsEnableDEVCOMCommand}">Enable all</Button>
                         <Button Margin="0,10,0,0"
                                 Command="{Binding RefreshDEVCOM}">Refresh</Button>
                     </StackPanel>
 
-                    <TextBox Text="{Binding DEVCOMOutput}"
-                               FontSize="18"
-                               ScrollViewer.VerticalScrollBarVisibility="Auto"
-                               Grid.Column="1"
-                               MaxHeight="350"                             
-                               Margin="10,0,10,0"
-                               FontWeight="Bold">
-                    </TextBox>
+                    <StackPanel Grid.Column="1">
+                        <GroupBox FontSize="18"                                  
+                                  Margin="10,0,10,0"
+                                  FontWeight="Bold"
+                                  Header="USB list">
 
+                            <ListView Height="350"
+                                      Margin="10,0,10,0"
+                                      HorizontalAlignment="Stretch"
+                                      HorizontalContentAlignment="Stretch"
+                                      Background="White"
+                                      BorderBrush="White"
+                                      SelectedItem="{Binding USBDevconSelected}"
+                                      ItemsSource="{Binding USBDevconList}">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label   HorizontalAlignment="Stretch"
+                                                     Width="40"
+                                                     HorizontalContentAlignment="Stretch"
+                                                     Content="{Binding Count}" />
+                                            <Label   HorizontalAlignment="Stretch"
+                                                     HorizontalContentAlignment="Stretch"
+                                                     Width="450"
+                                                     Content="{Binding HardwareID}" />
+                                            <Label   HorizontalAlignment="Stretch"
+                                                     Width="450"
+                                                     Margin="20,0,0,0"
+                                                     HorizontalContentAlignment="Stretch"
+                                                     Content="{Binding Name}" />
+                                            <Label   HorizontalAlignment="Stretch"
+                                                     HorizontalContentAlignment="Stretch"
+                                                     Content="{Binding IsRunning}" />
+
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                                <ListView.ItemContainerStyle>
+                                    <Style TargetType="ListBoxItem">
+                                        <Setter Property="HorizontalAlignment"
+                                                Value="Stretch" />
+                                    </Style>
+                                </ListView.ItemContainerStyle>
+                            </ListView>
+                        </GroupBox>
+                        <Label FontSize="18" Margin="10,30,10,0">Command Result</Label>
+                        <TextBox Text="{Binding DEVCOMOutput}"
+                                 FontSize="18"
+                                 ScrollViewer.VerticalScrollBarVisibility="Auto"                                 
+                                 MaxHeight="150"
+                                 Margin="10,0,10,0"
+                                 FontWeight="Bold">
+                        </TextBox>
+                    </StackPanel>
                 </Grid>
             </StackPanel>
 
 
             <!-- DISABLE KEYBOARD -->
-            <StackPanel>
+            <StackPanel Margin="0,30,0,0">
 
                 <Label Margin="10"
                        Content="VIRTUAL KEYBOARD"
@@ -334,10 +388,12 @@
                             Height="50"
                             Width="250"
                             Margin="50,00,0,0"
+                            Visibility="Collapsed"
                             IsEnabled="{Binding IsDisableShortcut}">Disable</Button>
                     <Button Margin="10,00,0,0"
                             Height="50"
                             Width="250"
+                            Visibility="Collapsed"
                             Command="{Binding EnableShortcutCommand}"
                             IsEnabled="{Binding IsEnableShortcut}">Enable</Button>
                 </StackPanel>

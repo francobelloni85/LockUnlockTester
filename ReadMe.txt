@@ -22,3 +22,9 @@ As a hack you can hide the taskbar and prevent the user from entering with the m
 
 devcon.exe is a Microsoft tool to manage devices. It must be place in the current application folder (bin/debug/devcon.exe)
 in order to the shell to execute the script.
+
+
+*********************
+
+[key logger]
+
