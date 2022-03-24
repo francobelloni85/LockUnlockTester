@@ -26,8 +26,6 @@ namespace CG.LockUnlockTester
     public class MainWindowViewModel : ViewModelBase
     {
 
-
-
         #region DISABLE USB 
 
         [DllImport("User32.dll")]
@@ -176,6 +174,31 @@ namespace CG.LockUnlockTester
         private bool isVirtualKeyboardDisable = true;
         public bool IsVirtualKeyboardDisable { get => isVirtualKeyboardDisable; set { isVirtualKeyboardDisable = value; base.RaisePropertyChanged(nameof(IsVirtualKeyboardDisable)); } }
 
+        // KEYBOARD LISTENER ---------------------------------
+
+        public RelayCommand CreateKeyLoggerCommand { get; set; }
+
+        public RelayCommand DisposeKeyLoggerCommand { get; set; }
+
+        private bool isCreateKeyLoggerEnable = true;
+        public bool IsCreateKeyLoggerEnable { get => isCreateKeyLoggerEnable; set { isCreateKeyLoggerEnable = value; base.RaisePropertyChanged(nameof(IsCreateKeyLoggerEnable)); } }
+
+        private bool isKeyLoggerAlive;
+        public bool IsKeyLoggerAlive { get => isKeyLoggerAlive; set { isKeyLoggerAlive = value; base.RaisePropertyChanged(nameof(IsKeyLoggerAlive)); } }
+
+        KeyboardListener keyboardListener;
+
+        /// <summary>
+        /// Questa call back è solo per far vedere che il keylogger è attivo
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        void KeyboardListener_KeyDown(object sender, RawKeyEventArgs args)
+        {
+            Console.WriteLine(args.Key.ToString());
+            Console.WriteLine(args.ToString()); // Prints the text of pressed button, takes in account big and small letters. E.g. "Shift+a" => "A"
+        }
+
 
         // DISABLE SHORTCUT  ---------------------------------
 
@@ -183,13 +206,11 @@ namespace CG.LockUnlockTester
 
         public RelayCommand EnableShortcutCommand { get; set; }
 
-        private bool isDisableShortcut = true;
+        private bool isDisableShortcut;
         public bool IsDisableShortcut { get => isDisableShortcut; set { isDisableShortcut = value; base.RaisePropertyChanged(nameof(IsDisableShortcut)); } }
 
         private bool isEnableShortcut;
         public bool IsEnableShortcut { get => isEnableShortcut; set { isEnableShortcut = value; base.RaisePropertyChanged(nameof(IsEnableShortcut)); } }
-
-        ManageShortcutCallback shortcutCallback;
 
 
         // DISABLE TASK MANAGER  ---------------------------------
@@ -256,20 +277,18 @@ namespace CG.LockUnlockTester
             }
         }
 
-
-
         /// <summary>
         /// CST
         /// </summary>
         /// <param name="shortcutCallback"></param>
-        public MainWindowViewModel(ManageShortcutCallback shortcutCallback)
+        public MainWindowViewModel()
         {
-
 
             // Logger
             Logger.Info("Start the app");
 
-            this.shortcutCallback = shortcutCallback;
+            // ManageShortcutCallback shortcutCallback
+            //this.shortcutCallback = shortcutCallback;
 
             this.USBDevices = LockUnlockHelper.GetUSBDevices();
 
@@ -295,6 +314,10 @@ namespace CG.LockUnlockTester
             // Virtual keyboard
             DisableVirtualKeyboardCommand = new RelayCommand(DisableVirtualKeyboardExecute);
             EnableVirtualKeyboardCommand = new RelayCommand(EnableVirtualKeyboardExecute);
+
+            // Key logger
+            CreateKeyLoggerCommand = new RelayCommand(CreateKeyLoggerExecute);
+            DisposeKeyLoggerCommand = new RelayCommand(DisposeKeyLoggerExecute);
 
             // Short cut
             DisableShortcutCommand = new RelayCommand(DisableShortcutExecute);
@@ -357,6 +380,8 @@ namespace CG.LockUnlockTester
             {
                 Logger.Info(ex);
             }
+
+
 
 
         }
@@ -659,19 +684,56 @@ namespace CG.LockUnlockTester
 
         #region Disable Shortcut
 
+        private void CreateKeyLoggerExecute()
+        {
+            keyboardListener = new KeyboardListener();
+            keyboardListener.KeyDown += new RawKeyEventHandler(KeyboardListener_KeyDown);
+
+            IsCreateKeyLoggerEnable = false;
+            IsKeyLoggerAlive = true;
+
+            IsEnableShortcut = true;
+            IsDisableShortcut = false;
+        }
+
+        private void DisposeKeyLoggerExecute()
+        {
+            keyboardListener.KeyDown -= KeyboardListener_KeyDown;
+            keyboardListener.Dispose();
+            IsCreateKeyLoggerEnable = true;
+            IsKeyLoggerAlive = false;
+
+            IsEnableShortcut = false;
+            IsDisableShortcut = false;
+        }
+
+
         private void EnableShortcutExecute()
         {
-            shortcutCallback.Invoke(true);
+            ManageShortcut(true);
             IsEnableShortcut = false;
             IsDisableShortcut = true;
         }
 
         private void DisableShortcutExecute()
         {
-            shortcutCallback.Invoke(false);
+            ManageShortcut(false);
             IsEnableShortcut = true;
             IsDisableShortcut = false;
         }
+
+        public void ManageShortcut(bool enable)
+        {
+            if (enable)
+            {
+                keyboardListener.EnableShortcut();
+            }
+            else
+            {
+                keyboardListener.DisableShortcut();
+            }
+        }
+
 
 
         #endregion

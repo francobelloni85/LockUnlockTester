@@ -144,12 +144,12 @@ namespace LockUnlock
                     hookedKeyboardCallbackAsync.BeginInvoke((InterceptKeys.KeyEvent)wParam.ToUInt32(), Marshal.ReadInt32(lParam), chars, null, null);
                 }
 
-            Console.WriteLine("wParam= " + wParam);
-            Console.WriteLine("lParam= " + lParam);
-            Console.WriteLine("chars= " + chars);
-            Console.WriteLine("nCode= " + nCode);
-            Console.WriteLine("vkCode= " + vkCode);
-            Console.WriteLine("key= " + key);
+            //Console.WriteLine("wParam= " + wParam);
+            //Console.WriteLine("lParam= " + lParam);
+            //Console.WriteLine("chars= " + chars);
+            //Console.WriteLine("nCode= " + nCode);
+            //Console.WriteLine("vkCode= " + vkCode);
+            //Console.WriteLine("key= " + key);
 
             return InterceptKeys.CallNextHookEx(hookId, nCode, wParam, lParam);
         }

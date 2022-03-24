@@ -8,9 +8,10 @@ namespace CG.LockUnlockTester
     /// </summary>
     public partial class MainWindow : MetroWindow
     {
-        public MainWindow(ManageShortcutCallback shortcutCallback)
+        
+        public MainWindow()
         {
-            DataContext = new MainWindowViewModel(shortcutCallback);
+            DataContext = new MainWindowViewModel();
             InitializeComponent();
         }
 

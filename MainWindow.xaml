@@ -320,9 +320,20 @@
                 <StackPanel Orientation="Horizontal"
                             Margin="10,10,0,0">
 
+                    <Button Command="{Binding CreateKeyLoggerCommand }"
+                            Height="50"
+                            Width="250"
+                            IsEnabled="{Binding IsCreateKeyLoggerEnable}">Create Key logger</Button>
+                    <Button Margin="10,00,0,0"
+                            Height="50"
+                            Width="250"
+                            Command="{Binding DisposeKeyLoggerCommand}"
+                            IsEnabled="{Binding IsKeyLoggerAlive}">Dispose</Button>
+                    
                     <Button Command="{Binding DisableShortcutCommand }"
                             Height="50"
                             Width="250"
+                            Margin="50,00,0,0"
                             IsEnabled="{Binding IsDisableShortcut}">Disable</Button>
                     <Button Margin="10,00,0,0"
                             Height="50"
