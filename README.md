@@ -11,5 +11,5 @@ More information in the readme.txt inside the library
 
 Tested in visual studio 2019
 
-![LockUnlockTester](https://user-images.githubusercontent.com/6959717/159898325-ed36fe86-330f-4761-a8d9-5330d11c65f1.PNG)
+![LockUnlockTester](https://user-images.githubusercontent.com/6959717/159901874-0b1ff877-9fd9-4c34-8326-ed2c980abd11.PNG)
 
