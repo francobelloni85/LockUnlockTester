@@ -26,32 +26,16 @@ namespace CG.LockUnlockTester
     public class MainWindowViewModel : ViewModelBase
     {
 
-        #region DISABLE USB 
-
-        [DllImport("User32.dll")]
-        internal static extern bool SetupDiEnumDeviceInfo(SafeDeviceInfoSetHandle deviceInfoSet, int memberIndex, ref DeviceInfoData deviceInfoData);
-        [DllImport("User32.dll")]
-        internal static extern bool SetupDiCallClassInstaller(DiFunction installFunction, SafeDeviceInfoSetHandle deviceInfoSet, [In()] ref DeviceInfoData deviceInfoData);
-        [DllImport("User32.dll")]
-        internal static extern SafeDeviceInfoSetHandle SetupDiGetClassDevs([In()] ref Guid classGuid, [MarshalAs(UnmanagedType.LPWStr)] string enumerator, IntPtr hwndParent, SetupDiGetClassDevsFlags flags);
-        [DllImport("User32.dll")]
-        internal static extern bool SetupDiGetDeviceInstanceId(IntPtr DeviceInfoSet, ref DeviceInfoData did, [MarshalAs(UnmanagedType.LPTStr)] StringBuilder DeviceInstanceId, int DeviceInstanceIdSize, out int RequiredSize);
-        [DllImport("User32.dll")]
-        internal static extern bool SetupDiDestroyDeviceInfoList(IntPtr deviceInfoSet);
-        [DllImport("User32.dll")]
-        internal static extern bool SetupDiSetClassInstallParams(SafeDeviceInfoSetHandle deviceInfoSet, [In()] ref DeviceInfoData deviceInfoData, [In()] ref PropertyChangeParameters classInstallParams, int classInstallParamsSize);
-
-        #endregion
-
-
-
         /// <summary>
         /// Logger
         /// </summary>
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
+        #region USB DISABLE
 
         // USB by Registry -----------------------------------------
+
+
 
         private List<USBDeviceInfo> usbDevices = new List<USBDeviceInfo>();
 
@@ -89,6 +73,7 @@ namespace CG.LockUnlockTester
 
         // USB by API ---------------------------------
 
+
         public GenericDeviceInfo deviceSelected;
         public GenericDeviceInfo DeviceSelected
         {
@@ -123,6 +108,7 @@ namespace CG.LockUnlockTester
 
         private bool isEnableDeviceAllEnable = true;
         public bool IsEnableDeviceAllEnable { get => isEnableDeviceAllEnable; set { isEnableDeviceAllEnable = value; base.RaisePropertyChanged(nameof(IsEnableDeviceAllEnable)); } }
+
 
 
         // DEVCOM
@@ -169,6 +155,8 @@ namespace CG.LockUnlockTester
 
         public RelayCommand EnableDeviceDevconCommand { get; set; }
 
+        #endregion
+
 
         // USER ---------------------------------
 
@@ -185,6 +173,8 @@ namespace CG.LockUnlockTester
 
         // VIRTUAL KEYBOARD ---------------------------------
 
+        #region VIRTUAL KEYBOARD
+
         public RelayCommand DisableVirtualKeyboardCommand { get; set; }
 
         public RelayCommand EnableVirtualKeyboardCommand { get; set; }
@@ -195,7 +185,11 @@ namespace CG.LockUnlockTester
         private bool isVirtualKeyboardDisable = true;
         public bool IsVirtualKeyboardDisable { get => isVirtualKeyboardDisable; set { isVirtualKeyboardDisable = value; base.RaisePropertyChanged(nameof(IsVirtualKeyboardDisable)); } }
 
+        #endregion
+
         // KEYBOARD LISTENER ---------------------------------
+
+        #region KEYBOARD LISTENER
 
         public RelayCommand CreateKeyLoggerCommand { get; set; }
 
@@ -220,9 +214,11 @@ namespace CG.LockUnlockTester
             Console.WriteLine(args.ToString()); // Prints the text of pressed button, takes in account big and small letters. E.g. "Shift+a" => "A"
         }
 
+        #endregion
 
         // DISABLE SHORTCUT  ---------------------------------
 
+        #region SHORTCUT
         public RelayCommand DisableShortcutCommand { get; set; }
 
         public RelayCommand EnableShortcutCommand { get; set; }
@@ -233,8 +229,11 @@ namespace CG.LockUnlockTester
         private bool isEnableShortcut;
         public bool IsEnableShortcut { get => isEnableShortcut; set { isEnableShortcut = value; base.RaisePropertyChanged(nameof(IsEnableShortcut)); } }
 
+        #endregion
 
         // DISABLE TASK MANAGER  ---------------------------------
+
+        #region TASK MANAGER
 
         public RelayCommand DisableTaskManagerCommand { get; set; }
 
@@ -246,8 +245,11 @@ namespace CG.LockUnlockTester
         private bool isTaskManagerEnable;
         public bool IsTaskManagerEnable { get => isTaskManagerEnable; set { isTaskManagerEnable = value; base.RaisePropertyChanged(nameof(IsTaskManagerEnable)); } }
 
+        #endregion
 
         // DISABLE TASK BAR  ---------------------------------
+
+        #region TASK BAR
 
         public RelayCommand DisableTaskBarCommand { get; set; }
 
@@ -259,9 +261,11 @@ namespace CG.LockUnlockTester
         private bool isTaskbarEnable;
         public bool IsTaskbarEnable { get => isTaskbarEnable; set { isTaskbarEnable = value; base.RaisePropertyChanged(nameof(IsTaskbarEnable)); } }
 
+        #endregion
 
         // DISABLE MOUSE LIMIT AREA ---------------------------------
 
+        #region MOUSE LIMIT AREA
         private DispatcherTimer dispatcherTimerMousePosition;
 
         private int MouseYLimit = -1;
@@ -297,6 +301,8 @@ namespace CG.LockUnlockTester
                 this.Y = y;
             }
         }
+
+        #endregion
 
         // COSTRUTTORE ------------------------------
 
@@ -371,16 +377,11 @@ namespace CG.LockUnlockTester
 
             // READ DEVICES ------------------------------
 
-
             ReadCurrentUsbStatus();
 
             LoadPCAllDevices();
 
             // Mouse events
-
-            //int PSBH = Screen.PrimaryScreen.Bounds.Height;
-            //int TaskBarHeight = PSBH - Screen.PrimaryScreen.WorkingArea.Height;
-
             MouseYLimit = Screen.PrimaryScreen.WorkingArea.Height;
 
             this.dispatcherTimerMousePosition = new DispatcherTimer();
@@ -393,7 +394,8 @@ namespace CG.LockUnlockTester
                 {
                     ReadUSBListByDevCon();
                 }
-                else {
+                else
+                {
                     UserMessage = "devcon.exe not found!";
                     IsEnableDeviceDevconEnable = false;
                     IsDisableDeviceDevconEnable = false;
@@ -403,13 +405,8 @@ namespace CG.LockUnlockTester
             {
                 Logger.Info(ex);
             }
-
-
-
-
         }
-
-
+    
         private void LoadPCAllDevices()
         {
 
@@ -585,9 +582,10 @@ namespace CG.LockUnlockTester
             var temp = LockUnlockHelper.GetDevConUSBList();
 
             USBDevconList.Clear();
-            foreach (var item in temp) {
+            foreach (var item in temp)
+            {
                 USBDevconList.Add(item);
-            }              
+            }
 
             if (USBDevconList.Count == 0)
             {
@@ -610,7 +608,8 @@ namespace CG.LockUnlockTester
             ManageDeviceByDevcon(false);
         }
 
-        public void ManageDeviceByDevcon(bool enable) {
+        public void ManageDeviceByDevcon(bool enable)
+        {
 
             LockUnlockHelper.EnableDeviceDevCon(USBDevconSelected.HardwareID, enable);
             RefreshDEVCOMExecute();

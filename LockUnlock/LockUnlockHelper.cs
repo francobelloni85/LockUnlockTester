@@ -172,6 +172,99 @@ namespace LockUnlock
 
         #endregion
 
+        #region USB Devcon
+
+        public static string devconFileOutput = "devcon_output.txt";
+
+
+        public static List<DevconUSB> GetDevConUSBList()
+        {
+            var result = new List<DevconUSB>();
+            try
+            {
+                var startupPath = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
+                var pathFile_listusbtxt = Path.Combine(startupPath, devconFileOutput);
+
+                ExecuteCommand("devcon status USB\\* > " + devconFileOutput);
+
+                if (File.Exists(devconFileOutput))
+                {
+                    var fileText = File.ReadAllText(pathFile_listusbtxt);
+
+                    var line = fileText.Split('\n');
+                    if (line.Length < 3)
+                    {
+                        return new List<DevconUSB>();
+                    }
+
+                    var count = 1;
+                    for (int i = 0; i < line.Length - 3; i += 3)
+                    {
+                        var path = line[i].Trim();
+                        var name = line[i + 1].Trim().Replace("Name: ", "");
+                        var driveIsRunning = line[i + 2].Trim();
+                        result.Add(new DevconUSB(count, path, name, driveIsRunning));
+                        count++;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+
+            return result;
+        }
+
+
+        public static void EnableDeviceDevCon(string HardwareID, bool enable)
+        {
+
+            string command = "devcon enable \"@" + HardwareID + "\" > " + devconFileOutput;
+            if (enable == false)
+            {
+                command = "devcon disable \"@" + HardwareID + "\" > " + devconFileOutput;
+            }
+            ExecuteCommand(command);
+
+        }
+
+        private static void ExecuteCommand(string command)
+        {
+            int exitCode;
+            ProcessStartInfo processInfo;
+            Process process;
+
+            processInfo = new ProcessStartInfo("cmd.exe", "/c " + command);
+            processInfo.CreateNoWindow = true;
+            processInfo.UseShellExecute = false;
+            // *** Redirect the output ***
+            processInfo.RedirectStandardError = true;
+            processInfo.RedirectStandardOutput = true;
+
+            process = Process.Start(processInfo);
+            process.WaitForExit();
+
+            // *** Read the streams ***
+            // Warning: This approach can lead to deadlocks, see Edit #2
+            string output = process.StandardOutput.ReadToEnd();
+            string error = process.StandardError.ReadToEnd();
+
+            exitCode = process.ExitCode;
+
+            if (Debugger.IsAttached)
+            {
+                Console.WriteLine("output>>" + (String.IsNullOrEmpty(output) ? "(none)" : output));
+                Console.WriteLine("error>>" + (String.IsNullOrEmpty(error) ? "(none)" : error));
+                Console.WriteLine("ExitCode: " + exitCode.ToString(), "ExecuteCommand");
+            }
+
+            process.Close();
+        }
+
+
+        #endregion
+
         #region Virtual keyboard
 
         /// <summary>
@@ -260,98 +353,6 @@ namespace LockUnlock
             var command = "powershell -command \"&{$p='HKCU:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\StuckRects3';$v=(Get-ItemProperty -Path $p).Settings;$v[8]=" + value + ";&Set-ItemProperty -Path $p -Name Settings -Value $v;&Stop-Process -f -ProcessName explorer}\"";
             Process.Start("cmd.exe", "/C " + command);
         }
-
-        #endregion
-
-        #region Devcon
-
-        public static string devconFileOutput = "devcon_output.txt";
-
-
-        public static List<DevconUSB> GetDevConUSBList()
-        {
-            var result = new List<DevconUSB>();
-            try
-            {
-                var startupPath = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
-                var pathFile_listusbtxt = Path.Combine(startupPath, devconFileOutput);
-
-                ExecuteCommand("devcon status USB\\* > " + devconFileOutput);
-
-                if (File.Exists(devconFileOutput))
-                {
-                    var fileText = File.ReadAllText(pathFile_listusbtxt);
-
-                    var line = fileText.Split('\n');
-                    if (line.Length < 3)
-                    {
-                        return new List<DevconUSB>();
-                    }
-
-                    var count = 1;
-                    for (int i = 0; i < line.Length - 3; i += 3)
-                    {
-                        var path = line[i].Trim();
-                        var name = line[i + 1].Trim().Replace("Name: ", "");
-                        var driveIsRunning = line[i + 2].Trim();
-                        result.Add(new DevconUSB(count, path, name, driveIsRunning));
-                        count++;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
-
-            return result;
-        }
-
-
-        public static void EnableDeviceDevCon(string HardwareID, bool enable) {
-
-            string command = "devcon enable \"@" + HardwareID + "\" > " + devconFileOutput;
-            if (enable == false)
-            {
-                command = "devcon disable \"@" + HardwareID + "\" > " + devconFileOutput;
-            }            
-            ExecuteCommand(command);
-
-        }
-
-        private static void ExecuteCommand(string command)
-        {
-            int exitCode;
-            ProcessStartInfo processInfo;
-            Process process;
-
-            processInfo = new ProcessStartInfo("cmd.exe", "/c " + command);
-            processInfo.CreateNoWindow = true;
-            processInfo.UseShellExecute = false;
-            // *** Redirect the output ***
-            processInfo.RedirectStandardError = true;
-            processInfo.RedirectStandardOutput = true;
-
-            process = Process.Start(processInfo);
-            process.WaitForExit();
-
-            // *** Read the streams ***
-            // Warning: This approach can lead to deadlocks, see Edit #2
-            string output = process.StandardOutput.ReadToEnd();
-            string error = process.StandardError.ReadToEnd();
-
-            exitCode = process.ExitCode;
-
-            if (Debugger.IsAttached)
-            {
-                Console.WriteLine("output>>" + (String.IsNullOrEmpty(output) ? "(none)" : output));
-                Console.WriteLine("error>>" + (String.IsNullOrEmpty(error) ? "(none)" : error));
-                Console.WriteLine("ExitCode: " + exitCode.ToString(), "ExecuteCommand");
-            }
-
-            process.Close();
-        }
-
 
         #endregion
 
