@@ -312,101 +312,149 @@ namespace CG.LockUnlockTester
         /// <param name="shortcutCallback"></param>
         public MainWindowViewModel()
         {
-
-            // Logger
-            Logger.Info("Start the app");
-
-            // ManageShortcutCallback shortcutCallback
-            //this.shortcutCallback = shortcutCallback;
-
-            this.USBDevices = LockUnlockHelper.GetUSBDevices();
-
-            // BUTTONS ------------------------------
-
-            // usb
-            DisableUSBCommand = new RelayCommand(DisableUSBStorageByRegistryExecute);
-            EnableUSBCommand = new RelayCommand(EnableUSBStorageByRegistryExecute);
-            RefreshUSBListCommand = new RelayCommand(RefreshUSBListExecute);
-
-            // all device
-            DisableDeviceCommand = new RelayCommand(DisableDeviceCommandExecute);
-            EnableDeviceCommand = new RelayCommand(EnableDeviceCommandExecute);
-            RefreshAllDeviceListCommand = new RelayCommand(RefreshAllDeviceListExecute);
-            EnableAllDeviceCommand = new RelayCommand(EnableAllDeviceExecute);
-            DisableAllDeviceCommand = new RelayCommand(DisableAllDeviceExecute);
-
-            // DEVCOM
-            DisableDEVCOMCommand = new RelayCommand(DisableDEVCOMCommandExecute);
-            EnableDEVCOMCommand = new RelayCommand(EnableDEVCOMCommandExecute);
-            RefreshDEVCOM = new RelayCommand(RefreshDEVCOMExecute);
-            DisableDeviceDevconCommand = new RelayCommand(DisableDeviceDevconExecute);
-            EnableDeviceDevconCommand = new RelayCommand(EnableDeviceDevconExecute);
-
-            // Virtual keyboard
-            DisableVirtualKeyboardCommand = new RelayCommand(DisableVirtualKeyboardExecute);
-            EnableVirtualKeyboardCommand = new RelayCommand(EnableVirtualKeyboardExecute);
-
-            // Key logger
-            CreateKeyLoggerCommand = new RelayCommand(CreateKeyLoggerExecute);
-            DisposeKeyLoggerCommand = new RelayCommand(DisposeKeyLoggerExecute);
-
-            // Short cut
-            DisableShortcutCommand = new RelayCommand(DisableShortcutExecute);
-            EnableShortcutCommand = new RelayCommand(EnableShortcutExecute); ;
-
-            // TaskManager
-            DisableTaskManagerCommand = new RelayCommand(DisableTaskManagerExecute);
-            EnableTaskManagerCommand = new RelayCommand(EnableTaskManagerExecute); ;
-
-            // TaskBar
-            DisableTaskBarCommand = new RelayCommand(DisableTaskBarExecute);
-            EnableTaskBarCommand = new RelayCommand(EnableTaskBarExecute); ;
-
-            // Mouse limit area
-            DisableLimitAreaMouseCommand = new RelayCommand(DisableLimitAreaMouseExecute);
-            EnableLimitAreaMouseCommand = new RelayCommand(EnableLimitAreaMouseExecute); ;
-
-
-            // USER ------------------------------
-            using (WindowsIdentity identity = WindowsIdentity.GetCurrent())
-            {
-                WindowsPrincipal principal = new WindowsPrincipal(identity);
-                IsAdmin = principal.IsInRole(WindowsBuiltInRole.Administrator);
-                UserName = principal.Identity.Name;
-            }
-
-            // READ DEVICES ------------------------------
-
-            ReadCurrentUsbStatus();
-
-            LoadPCAllDevices();
-
-            // Mouse events
-            MouseYLimit = Screen.PrimaryScreen.WorkingArea.Height;
-
-            this.dispatcherTimerMousePosition = new DispatcherTimer();
-            this.dispatcherTimerMousePosition.Tick += new EventHandler(TimerTickMousePosition);
-            this.dispatcherTimerMousePosition.Interval = new TimeSpan(0, 0, 0, 0, 50);
-
             try
             {
-                if (File.Exists("devcon.exe"))
+                // Logger
+                Logger.Info("Start the app");
+
+                this.USBDevices = LockUnlockHelper.GetUSBDevices();
+
+                // BUTTONS ------------------------------
+
+                // usb
+                DisableUSBCommand = new RelayCommand(DisableUSBStorageByRegistryExecute);
+                EnableUSBCommand = new RelayCommand(EnableUSBStorageByRegistryExecute);
+                RefreshUSBListCommand = new RelayCommand(RefreshUSBListExecute);
+
+                // all device
+                DisableDeviceCommand = new RelayCommand(DisableDeviceCommandExecute);
+                EnableDeviceCommand = new RelayCommand(EnableDeviceCommandExecute);
+                RefreshAllDeviceListCommand = new RelayCommand(RefreshAllDeviceListExecute);
+                EnableAllDeviceCommand = new RelayCommand(EnableAllDeviceExecute);
+                DisableAllDeviceCommand = new RelayCommand(DisableAllDeviceExecute);
+
+                // DEVCOM
+                DisableDEVCOMCommand = new RelayCommand(DisableDEVCOMCommandExecute);
+                EnableDEVCOMCommand = new RelayCommand(EnableDEVCOMCommandExecute);
+                RefreshDEVCOM = new RelayCommand(RefreshDEVCOMExecute);
+                DisableDeviceDevconCommand = new RelayCommand(DisableDeviceDevconExecute);
+                EnableDeviceDevconCommand = new RelayCommand(EnableDeviceDevconExecute);
+
+                // Virtual keyboard
+                DisableVirtualKeyboardCommand = new RelayCommand(DisableVirtualKeyboardExecute);
+                EnableVirtualKeyboardCommand = new RelayCommand(EnableVirtualKeyboardExecute);
+
+                // Key logger
+                CreateKeyLoggerCommand = new RelayCommand(CreateKeyLoggerExecute);
+                DisposeKeyLoggerCommand = new RelayCommand(DisposeKeyLoggerExecute);
+
+                // Short cut
+                DisableShortcutCommand = new RelayCommand(DisableShortcutExecute);
+                EnableShortcutCommand = new RelayCommand(EnableShortcutExecute); ;
+
+                // TaskManager
+                DisableTaskManagerCommand = new RelayCommand(DisableTaskManagerExecute);
+                EnableTaskManagerCommand = new RelayCommand(EnableTaskManagerExecute); ;
+
+                // TaskBar
+                DisableTaskBarCommand = new RelayCommand(DisableTaskBarExecute);
+                EnableTaskBarCommand = new RelayCommand(EnableTaskBarExecute); ;
+
+                // Mouse limit area
+                DisableLimitAreaMouseCommand = new RelayCommand(DisableLimitAreaMouseExecute);
+                EnableLimitAreaMouseCommand = new RelayCommand(EnableLimitAreaMouseExecute); ;
+
+                // USER ------------------------------
+                using (WindowsIdentity identity = WindowsIdentity.GetCurrent())
                 {
-                    ReadUSBListByDevCon();
+                    WindowsPrincipal principal = new WindowsPrincipal(identity);
+                    IsAdmin = principal.IsInRole(WindowsBuiltInRole.Administrator);
+                    UserName = principal.Identity.Name;
                 }
-                else
+
+                // READ USB DEVICES ------------------------------
+
+                // Mode 1
+                ReadCurrentUsbStatus();
+                
+                // Mode 2
+                LoadPCAllDevices();
+                
+                // Mode 3
+                try
                 {
-                    UserMessage = "devcon.exe not found!";
-                    IsEnableDeviceDevconEnable = false;
-                    IsDisableDeviceDevconEnable = false;
+                    if (File.Exists("devcon.exe"))
+                    {
+                        ReadUSBListByDevCon();
+                    }
+                    else
+                    {
+                        UserMessage = "devcon.exe not found!";
+                        IsEnableDeviceDevconEnable = false;
+                        IsDisableDeviceDevconEnable = false;
+                    }
                 }
+                catch (Exception ex)
+                {
+                    Logger.Info(ex);
+                }
+
+                // Mouse events
+                MouseYLimit = Screen.PrimaryScreen.WorkingArea.Height;
+
+                this.dispatcherTimerMousePosition = new DispatcherTimer();
+                this.dispatcherTimerMousePosition.Tick += new EventHandler(TimerTickMousePosition);
+                this.dispatcherTimerMousePosition.Interval = new TimeSpan(0, 0, 0, 0, 50);
             }
             catch (Exception ex)
             {
                 Logger.Info(ex);
             }
+
         }
-    
+
+
+
+
+
+        #region USB Registry
+
+        private void ReadCurrentUsbStatus()
+        {
+            this.CurrentUsbStatus = LockUnlockHelper.ReadUSBStatusInRegistry();
+            USBStatusDescription = this.CurrentUsbStatus.ToString();
+            IsDisableUSBCommandEnable = CurrentUsbStatus == USBStatus.Enable;
+            IsEnableUSBCommand = CurrentUsbStatus == USBStatus.Disable;
+            RefreshUSBListExecute();
+        }
+
+        private void RefreshUSBListExecute()
+        {
+            this.USBDevices = LockUnlockHelper.GetUSBDevices();
+        }
+
+        private void DisableUSBStorageByRegistryExecute()
+        {
+            if (!LockUnlockHelper.SetUSBbyRegistry(USBStatus.Disable))
+            {
+                UserMessage = "Fail to disable the usb! You must run the app as admin";
+            }
+            ReadCurrentUsbStatus();
+        }
+
+        private void EnableUSBStorageByRegistryExecute()
+        {
+            if (!LockUnlockHelper.SetUSBbyRegistry(USBStatus.Enable))
+            {
+                UserMessage = "Fail to enable the usb! You must run the app as admin";
+            }
+            ReadCurrentUsbStatus();
+        }
+
+        #endregion
+
+        #region USB API
+
         private void LoadPCAllDevices()
         {
 
@@ -468,44 +516,6 @@ namespace CG.LockUnlockTester
             });
 
         }
-
-        private void ReadCurrentUsbStatus()
-        {
-            this.CurrentUsbStatus = LockUnlockHelper.ReadUSBStatusInRegistry();
-            USBStatusDescription = this.CurrentUsbStatus.ToString();
-            IsDisableUSBCommandEnable = CurrentUsbStatus == USBStatus.Enable;
-            IsEnableUSBCommand = CurrentUsbStatus == USBStatus.Disable;
-            RefreshUSBListExecute();
-        }
-
-        #region USB Registry
-
-        private void RefreshUSBListExecute()
-        {
-            this.USBDevices = LockUnlockHelper.GetUSBDevices();
-        }
-
-        private void DisableUSBStorageByRegistryExecute()
-        {
-            if (!LockUnlockHelper.SetUSBbyRegistry(USBStatus.Disable))
-            {
-                UserMessage = "Fail to disable the usb! You must run the app as admin";
-            }
-            ReadCurrentUsbStatus();
-        }
-
-        private void EnableUSBStorageByRegistryExecute()
-        {
-            if (!LockUnlockHelper.SetUSBbyRegistry(USBStatus.Enable))
-            {
-                UserMessage = "Fail to enable the usb! You must run the app as admin";
-            }
-            ReadCurrentUsbStatus();
-        }
-
-        #endregion
-
-        #region USB API
 
         private void RefreshAllDeviceListExecute()
         {
@@ -575,8 +585,6 @@ namespace CG.LockUnlockTester
 
         #region DEVCOM
 
-
-
         private void ReadUSBListByDevCon()
         {
             var temp = LockUnlockHelper.GetDevConUSBList();
@@ -593,9 +601,6 @@ namespace CG.LockUnlockTester
                 IsDEVCOMFound = "not found";
             }
         }
-
-
-
 
         private void EnableDeviceDevconExecute()
         {
@@ -718,6 +723,9 @@ namespace CG.LockUnlockTester
             //IsDisableShortcut = false;
         }
 
+        /// <summary>
+        /// NOT USED
+        /// </summary>
         private void EnableShortcutExecute()
         {
             //ManageShortcut(true);
@@ -725,6 +733,9 @@ namespace CG.LockUnlockTester
             //IsDisableShortcut = true;
         }
 
+        /// <summary>
+        /// NOT USED
+        /// </summary>
         private void DisableShortcutExecute()
         {
             ManageShortcut(false);
@@ -732,6 +743,9 @@ namespace CG.LockUnlockTester
             IsDisableShortcut = false;
         }
 
+        /// <summary>
+        /// NOT USED
+        /// </summary>
         public void ManageShortcut(bool enable)
         {
             if (enable)
@@ -743,7 +757,6 @@ namespace CG.LockUnlockTester
                 keyboardListener.DisableShortcut();
             }
         }
-
 
 
         #endregion
@@ -786,7 +799,6 @@ namespace CG.LockUnlockTester
 
         #region TaskBar
 
-
         private void EnableTaskBarExecute()
         {
             try
@@ -820,6 +832,10 @@ namespace CG.LockUnlockTester
         #endregion
 
         #region LimitAreaMouse
+
+        /* Un timer controlla che il mouse non sia oltre il limite (troppo vicino alla barra di windows)
+         * Se lo è riporta il mouse in piu in alto. 
+         */
 
         private void EnableLimitAreaMouseExecute()
         {
