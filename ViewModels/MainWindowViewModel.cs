@@ -5,7 +5,6 @@ using NLog;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
@@ -700,7 +699,6 @@ namespace CG.LockUnlockTester
         private void CreateKeyLoggerExecute()
         {
             keyboardListener = new KeyboardListener();
-
             keyboardListener.KeyDown += new RawKeyEventHandler(KeyboardListener_KeyDown);
 
             IsCreateKeyLoggerEnable = false;
@@ -720,7 +718,6 @@ namespace CG.LockUnlockTester
             //IsEnableShortcut = false;
             //IsDisableShortcut = false;
         }
-
 
         private void EnableShortcutExecute()
         {

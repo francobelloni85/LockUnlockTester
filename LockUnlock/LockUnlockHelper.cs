@@ -172,7 +172,6 @@ namespace LockUnlock
 
         #endregion
 
-
         #region Virtual keyboard
 
         /// <summary>
@@ -199,7 +198,6 @@ namespace LockUnlock
 
 
         #endregion
-
 
         #region TaskManager
 
@@ -244,7 +242,6 @@ namespace LockUnlock
         }
 
         #endregion
-
 
         #region TaskBar
 
