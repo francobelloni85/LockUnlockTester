@@ -68,6 +68,9 @@ https://docs.microsoft.com/en-us/answers/questions/342793/c-use-clipcursor-to-bl
 https://github.com/Codeusa/Borderless-Gaming
 
 
+Keyboard eventi
+https://stackoverflow.com/questions/972039/is-there-a-system-event-when-processes-are-created
+https://social.msdn.microsoft.com/Forums/vstudio/en-US/138e57d3-7ee3-42a1-b43d-65900a56cb57/how-can-i-close-on-screen-keyboard-by-using-c?forum=wpf
 
 
 ####################################################

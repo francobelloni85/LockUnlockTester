@@ -1,4 +1,9 @@
-﻿[Troubleshooting] 
+﻿La documentazione in italiano è nella cartella della libreria
+
+------------------------------------------------------------------
+
+
+[Troubleshooting] 
 
 To run the application the LockUnlock library must be compiled as a 64bit release.
 Otherwise, there will be an error.
@@ -26,9 +31,4 @@ As a hack, you can hide the taskbar and prevent the user from entering with the 
 for the shell to execute the script.
 
 *********************
-
-Per il mouse c'è un timer che controlla che la posizione del mouse. 
-Se questa  non sia oltre il limite (troppo vicino alla barra di windows), lo riporta un piu in alto. 
-è un hack perchè nn è possibile far scomparire la taskbar.
-
 

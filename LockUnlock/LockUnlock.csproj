@@ -58,8 +58,12 @@
     <Compile Include="NativeMethods.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Taskbar.cs" />
+    <Compile Include="USBDetector.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="bootstrap.css" />
+    <Content Include="documentazione.htm" />
     <Content Include="NLog.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

@@ -5,12 +5,16 @@ using NLog;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Management;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
 using System.Text;
 using System.Windows.Forms;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Threading;
 
 
@@ -25,7 +29,6 @@ namespace CG.LockUnlockTester
 {
     public class MainWindowViewModel : ViewModelBase
     {
-
         /// <summary>
         /// Logger
         /// </summary>
@@ -42,7 +45,7 @@ namespace CG.LockUnlockTester
         /// </summary>
         public List<USBDeviceInfo> USBDevices { get => usbDevices; set { usbDevices = value; base.RaisePropertyChanged(nameof(USBDevices)); } }
 
-       
+
         public RelayCommand DisableUSBCommand { get; set; }
         public RelayCommand EnableUSBCommand { get; set; }
         public RelayCommand RefreshUSBListCommand { get; set; }
@@ -125,7 +128,7 @@ namespace CG.LockUnlockTester
 
 
         private DevconUSB usbDevconSelected;
-        
+
         /// <summary>
         /// L'usb che è al momento selezionata
         /// </summary>
@@ -198,8 +201,11 @@ namespace CG.LockUnlockTester
 
         #endregion
 
-
         // USER ---------------------------------
+
+        #region USER
+
+
 
         private bool isAdmin;
         /// <summary>
@@ -215,47 +221,18 @@ namespace CG.LockUnlockTester
         public string UserName { get => userName; set { userName = value; base.RaisePropertyChanged(nameof(UserName)); } }
 
         public string messageForTheUser;
-        
+
         /// <summary>
         /// Messaggio da far comparere all'utente
         /// </summary>
         public string MessageForTheUser { get => messageForTheUser; set { messageForTheUser = value; base.RaisePropertyChanged(nameof(MessageForTheUser)); } }
 
-
-
-        // VIRTUAL KEYBOARD ---------------------------------
-
-        #region VIRTUAL KEYBOARD
-        /// <summary>
-        /// Abilita la tastiare virtuale
-        /// </summary>
-        public RelayCommand DisableVirtualKeyboardCommand { get; set; }
-        
-        /// <summary>
-        /// Disabilita la tastiera virtuale
-        /// </summary>
-        public RelayCommand EnableVirtualKeyboardCommand { get; set; }
-
-        
-        private bool isVirtualKeyboardEnable;
-        /// <summary>
-        /// Mi dice se il punsate deve essere enable per la attivare il comando che abilita la tastiera
-        /// </summary>
-
-        public bool IsVirtualKeyboardEnable { get => isVirtualKeyboardEnable; set { isVirtualKeyboardEnable = value; base.RaisePropertyChanged(nameof(IsVirtualKeyboardEnable)); } }
-
-        private bool isVirtualKeyboardDisable = true;
-        
-        /// <summary>
-        /// Mi dice se il punsate deve essere enable per la attivare il comando che disabilita la tastiera
-        /// </summary>
-        public bool IsVirtualKeyboardDisable { get => isVirtualKeyboardDisable; set { isVirtualKeyboardDisable = value; base.RaisePropertyChanged(nameof(IsVirtualKeyboardDisable)); } }
-
         #endregion
 
-        // KEYBOARD LISTENER ---------------------------------
 
-        #region KEYBOARD LISTENER
+        // KEYBOARD LOGGER ---------------------------------
+
+        #region KEYBOARD LOGGER
 
         /// <summary>
         /// Comando per attivare il keylogger
@@ -290,6 +267,105 @@ namespace CG.LockUnlockTester
         }
 
         #endregion
+
+        // VIRTUAL KEYBOARD ---------------------------------
+
+        #region VIRTUAL KEYBOARD
+
+        /// <summary>
+        /// Abilita la tastiare virtuale
+        /// </summary>
+        public RelayCommand DisableVirtualKeyboardCommand { get; set; }
+
+        /// <summary>
+        /// Disabilita la tastiera virtuale
+        /// </summary>
+        public RelayCommand EnableVirtualKeyboardCommand { get; set; }
+
+
+        private bool isVirtualKeyboardEnable = true;
+        /// <summary>
+        /// Mi dice se il punsate deve essere enable per la attivare il comando che abilita la tastiera
+        /// </summary>
+
+        public bool IsVirtualKeyboardEnable { get => isVirtualKeyboardEnable; set { isVirtualKeyboardEnable = value; base.RaisePropertyChanged(nameof(IsVirtualKeyboardEnable)); } }
+
+        private bool isVirtualKeyboardDisable;
+
+        /// <summary>
+        /// Mi dice se il punsate deve essere enable per la attivare il comando che disabilita la tastiera
+        /// </summary>
+        public bool IsVirtualKeyboardDisable { get => isVirtualKeyboardDisable; set { isVirtualKeyboardDisable = value; base.RaisePropertyChanged(nameof(IsVirtualKeyboardDisable)); } }
+
+        #endregion
+
+        // KEYBOARD ---------------------------------
+
+        #region KEYBOARD
+
+        /// <summary>
+        /// Abilita la tastiare 
+        /// </summary>
+        public RelayCommand DisableKeyboardCommand { get; set; }
+
+        /// <summary>
+        /// Disabilita la tastiera 
+        /// </summary>
+        public RelayCommand EnableKeyboardCommand { get; set; }
+
+
+        private bool isKeyboardEnable;
+        /// <summary>
+        /// Mi dice se il punsate deve essere enable per la attivare il comando che abilita la tastiera
+        /// </summary>
+
+        public bool IsKeyboardEnable { get => isKeyboardEnable; set { isKeyboardEnable = value; base.RaisePropertyChanged(nameof(IsKeyboardEnable)); } }
+
+        private bool isKeyboardDisable;
+
+        /// <summary>
+        /// Mi dice se il punsate deve essere enable per la attivare il comando che disabilita la tastiera
+        /// </summary>
+        public bool IsKeyboardDisable { get => isKeyboardDisable; set { isKeyboardDisable = value; base.RaisePropertyChanged(nameof(IsKeyboardDisable)); } }
+
+        #endregion
+
+        // TASK VIEW ---------------------------------
+
+        #region TASK VIEW
+
+        private string taskViewStatus;
+        public string TaskViewStatus { get => taskViewStatus; set { taskViewStatus = value; base.RaisePropertyChanged(nameof(TaskViewStatus)); } }
+
+        /// <summary>
+        /// Abilita la task view
+        /// </summary>
+        public RelayCommand DisableTaskViewCommand { get; set; }
+
+        /// <summary>
+        /// Disabilita task view
+        /// </summary>
+        public RelayCommand EnableTaskViewCommand { get; set; }
+
+
+        private bool isDisableTaskView = true;
+        /// <summary>
+        /// Mi dice se il punsate deve essere enable per la attivare il comando che abilita la task view
+        /// </summary>
+
+        public bool IsDisableTaskView { get => isDisableTaskView; set { isDisableTaskView = value; base.RaisePropertyChanged(nameof(IsDisableTaskView)); } }
+
+        private bool isEnableTaskView;
+
+        /// <summary>
+        /// Mi dice se il punsate deve essere enable per la attivare il comando che disabilita la task view
+        /// </summary>
+        public bool IsEnableTaskView { get => isEnableTaskView; set { isEnableTaskView = value; base.RaisePropertyChanged(nameof(IsEnableTaskView)); } }
+
+
+
+        #endregion
+
 
         // DISABLE SHORTCUT  ---------------------------------
 
@@ -341,7 +417,7 @@ namespace CG.LockUnlockTester
         public bool IsTaskManagerDisable { get => isTaskManagerDisable; set { isTaskManagerDisable = value; base.RaisePropertyChanged(nameof(IsTaskManagerDisable)); } }
 
         private bool isTaskManagerEnable;
-        
+
         /// <summary>
         /// Mi indica lo stato del pulsate
         /// </summary>
@@ -449,6 +525,8 @@ namespace CG.LockUnlockTester
         {
             try
             {
+                
+
                 // Logger
                 Logger.Info("Start the app");
 
@@ -475,29 +553,38 @@ namespace CG.LockUnlockTester
                 DisableDeviceDevconCommand = new RelayCommand(DisableDeviceDevconExecute);
                 EnableDeviceDevconCommand = new RelayCommand(EnableDeviceDevconExecute);
 
-                // Virtual keyboard
-                DisableVirtualKeyboardCommand = new RelayCommand(DisableVirtualKeyboardExecute);
-                EnableVirtualKeyboardCommand = new RelayCommand(EnableVirtualKeyboardExecute);
-
                 // Key logger
                 CreateKeyLoggerCommand = new RelayCommand(CreateKeyLoggerExecute);
                 DisposeKeyLoggerCommand = new RelayCommand(DisposeKeyLoggerExecute);
 
+                // Disable keyboard
+                DisableKeyboardCommand = new RelayCommand(DisableKeyboardExecute);
+                EnableKeyboardCommand = new RelayCommand(EnableKeyboardExecute);
+
+                // Vitual keyboard
+                DisableVirtualKeyboardCommand = new RelayCommand(DisableVirtualKeyboardExecute);
+                EnableVirtualKeyboardCommand = new RelayCommand(EnableVirtualKeyboardExecute);
+
                 // Short cut
                 DisableShortcutCommand = new RelayCommand(DisableShortcutExecute);
-                EnableShortcutCommand = new RelayCommand(EnableShortcutExecute); ;
+                EnableShortcutCommand = new RelayCommand(EnableShortcutExecute);
 
                 // TaskManager
                 DisableTaskManagerCommand = new RelayCommand(DisableTaskManagerExecute);
-                EnableTaskManagerCommand = new RelayCommand(EnableTaskManagerExecute); ;
+                EnableTaskManagerCommand = new RelayCommand(EnableTaskManagerExecute);
 
                 // TaskBar
                 DisableTaskBarCommand = new RelayCommand(DisableTaskBarExecute);
-                EnableTaskBarCommand = new RelayCommand(EnableTaskBarExecute); ;
+                EnableTaskBarCommand = new RelayCommand(EnableTaskBarExecute);
 
                 // Mouse limit area
                 DisableLimitAreaMouseCommand = new RelayCommand(DisableLimitAreaMouseExecute);
-                EnableLimitAreaMouseCommand = new RelayCommand(EnableLimitAreaMouseExecute); ;
+                EnableLimitAreaMouseCommand = new RelayCommand(EnableLimitAreaMouseExecute);
+
+                // Task view
+                DisableTaskViewCommand = new RelayCommand(DisableTaskViewExecute);
+                EnableTaskViewCommand = new RelayCommand(EnableTaskViewExecute);
+                TaskViewStatus = LockUnlockHelper.ReadTaskView().ToString();
 
                 // USER ------------------------------
                 using (WindowsIdentity identity = WindowsIdentity.GetCurrent())
@@ -511,10 +598,10 @@ namespace CG.LockUnlockTester
 
                 // Mode 1
                 ReadCurrentUsbStatus();
-                
+
                 // Mode 2
                 LoadPCAllDevices();
-                
+
                 // Mode 3
                 try
                 {
@@ -540,6 +627,7 @@ namespace CG.LockUnlockTester
                 this.dispatcherTimerMousePosition = new DispatcherTimer();
                 this.dispatcherTimerMousePosition.Tick += new EventHandler(TimerTickMousePosition);
                 this.dispatcherTimerMousePosition.Interval = new TimeSpan(0, 0, 0, 0, 50);
+                                
             }
             catch (Exception ex)
             {
@@ -547,7 +635,6 @@ namespace CG.LockUnlockTester
             }
 
         }
-
 
         #region USB Registry
 
@@ -601,42 +688,61 @@ namespace CG.LockUnlockTester
             Console.WriteLine($"There are {allPcDevices.Count} devices.");
 
             var countDevice = 1;
+            int countStep = 1;
 
-            foreach (var usbDevice in allPcDevices)
+            foreach (ManagementBaseObject usbDevice in allPcDevices)
             {
-                if (usbDevice.GetPropertyValue("DeviceID").ToString().Contains("USB")
-                    && usbDevice.GetPropertyValue("Status").ToString().Contains("OK"))
-                {
+                countStep = 1;
 
+                string instancePath = GetProperty(usbDevice, "DeviceID");
+                countStep++;
+
+                string status = GetProperty(usbDevice, "Status");
+                countStep++;
+
+                if (instancePath.Contains("USB") && status.Contains("OK"))
+                {
                     // https://powershell.one/wmi/root/cimv2/cim_logicaldevice
 
                     try
                     {
-                        Guid mouseGuid = new Guid(usbDevice.GetPropertyValue("ClassGuid").ToString());
-                        string instancePath = usbDevice.GetPropertyValue("DeviceID").ToString();
 
-                        var description = (string)usbDevice.GetPropertyValue("Description");
-
-                        var name = usbDevice.GetPropertyValue("Name");
-                        if (name != null)
+                        countStep++;
+                        Guid mouseGuid = new Guid();
+                        countStep++;
+                        var mouseGuidValue = GetProperty(usbDevice, "ClassGuid");
+                        countStep++;
+                        if (mouseGuidValue != "NA")
                         {
+                            countStep++;
+                            mouseGuid = new Guid(mouseGuidValue);
+                        }
+                        countStep++;
+                        string description = GetProperty(usbDevice, "Description");
+                        countStep++;
+                        string stringStatusInfo = GetProperty(usbDevice, "StatusInfo");
+                        countStep++;
+                        string name = GetProperty(usbDevice, "Name");
+                        countStep++;
+                        if (name != "NA")
+                        {
+                            countStep++;
                             var t = name.ToString();
+                            countStep++;
                             if (t.ToLower().Trim() != description.ToLower().Trim())
                             {
+                                countStep++;
                                 description = description + " [" + t + "]";
                             }
                         }
-                        var stringStatusInfo = "not-set";
-                        var statusInfo = usbDevice.GetPropertyValue("StatusInfo");
-                        if (statusInfo != null)
-                        {
-                            stringStatusInfo = statusInfo.ToString();
-                        }
+                        countStep++;
+
                         AllDevices.Add(new GenericDeviceInfo(countDevice, instancePath, mouseGuid, description, true, stringStatusInfo));
                         countDevice++;
                     }
                     catch (Exception ex)
                     {
+                        Logger.Error("countStep=" + countStep);
                         Logger.Error(ex);
                     }
                 }
@@ -646,6 +752,25 @@ namespace CG.LockUnlockTester
             {
                 Mouse.OverrideCursor = null;
             });
+
+        }
+
+        private static string GetProperty(ManagementBaseObject obj, string property)
+        {
+            try
+            {
+                var value = (obj.GetPropertyValue(property) == null)
+                            ? "NA"
+                            : obj.GetPropertyValue(property).ToString();
+
+                return value;
+            }
+            catch (Exception ex)
+            {
+                //Logger.Error("property=" + property);
+                //Logger.Error(ex);
+            }
+            return "NA";
 
         }
 
@@ -716,22 +841,34 @@ namespace CG.LockUnlockTester
         #endregion
 
         #region DEVCOM
+        
 
         private void ReadUSBListByDevCon()
         {
             var temp = LockUnlockHelper.GetDevConUSBList();
+            List<DevConaHardwareDevice> allHardware = LockUnlockHelper.GetDevConaAllHardware();
 
-            USBDevconList.Clear();
+            ObservableCollection<DevconUSB> tempList = new ObservableCollection<DevconUSB>();
             foreach (var item in temp)
             {
-                USBDevconList.Add(item);
+                tempList.Add(item);
             }
 
-            if (USBDevconList.Count == 0)
+            if (tempList.Count == 0)
             {
                 DEVCOMOutput = "devcon.exe not working!";
                 IsDEVCOMFound = "not found";
             }
+
+            var OrderUSBDevconList = tempList.OrderBy(t => t.Name);
+
+            USBDevconList.Clear();
+            foreach (var item in OrderUSBDevconList)
+            {
+                item.DisplayName = LockUnlockHelper.GetDeviceNameByID(allHardware, item.HardwareID, item.Name);
+                USBDevconList.Add(item);
+            }
+
         }
 
         private void EnableDeviceDevconExecute()
@@ -747,10 +884,17 @@ namespace CG.LockUnlockTester
 
         public void ManageDeviceByDevcon(bool enable)
         {
-
+            //DisableKeyboard(enable);
             LockUnlockHelper.EnableDeviceDevCon(USBDevconSelected.HardwareID, enable);
             RefreshDEVCOMExecute();
         }
+
+        //private void DisableKeyboard(bool disable) {
+
+        //    var deviceID = "HID_DEVICE_SYSTEM_KEYBOARD";
+        //    LockUnlockHelper.EnableDeviceDevCon(deviceID, disable);
+
+        //}
 
 
         private void RefreshDEVCOMExecute()
@@ -799,27 +943,28 @@ namespace CG.LockUnlockTester
         {
             try
             {
-                LockUnlockHelper.EnableVirtualKeyboard();
+                LockUnlockHelper.EnableKeyboardOnScreen(true);
             }
             catch (Exception ex)
             {
-                MessageForTheUser = "Fail to EnableVirtualKeyboardExecute";
+                MessageForTheUser = "Fail to Enable Virtual Keyboard";
                 Logger.Error(ex);
             }
+
             IsVirtualKeyboardDisable = true;
             IsVirtualKeyboardEnable = false;
         }
-
+        
         private void DisableVirtualKeyboardExecute()
         {
 
             try
             {
-                LockUnlockHelper.DisableVirtualKeyboard();
+                LockUnlockHelper.EnableKeyboardOnScreen(false);
             }
             catch (Exception ex)
             {
-                MessageForTheUser = "Fail to DisableVirtualKeyboard";
+                MessageForTheUser = "Fail to Disable Virtual Keyboard";
                 Logger.Error(ex);
             }
 
@@ -829,44 +974,71 @@ namespace CG.LockUnlockTester
         }
 
         #endregion
-
-        #region Disable Shortcut
+        
+        #region Key logger
 
         private void CreateKeyLoggerExecute()
         {
             keyboardListener = new KeyboardListener();
-            keyboardListener.KeyDown += new RawKeyEventHandler(KeyboardListener_KeyDown);
 
-            IsCreateKeyLoggerEnable = false;
+            IsKeyboardDisable = false;
+            IsKeyboardEnable = true;
+
+            IsEnableShortcut = true;
+            IsDisableShortcut = false;
+
             IsKeyLoggerAlive = true;
-
-            //IsEnableShortcut = true;
-            //IsDisableShortcut = false;
         }
 
         private void DisposeKeyLoggerExecute()
         {
             keyboardListener.KeyDown -= KeyboardListener_KeyDown;
             keyboardListener.Dispose();
+
             IsCreateKeyLoggerEnable = true;
             IsKeyLoggerAlive = false;
 
-            //IsEnableShortcut = false;
-            //IsDisableShortcut = false;
+            IsKeyboardDisable = false;
+            IsKeyboardEnable = false;
+
+            IsEnableShortcut = false;
+            IsDisableShortcut = false;
         }
 
+        #endregion
+
+        #region Disable Keyboard
+
+        private void EnableKeyboardExecute()
+        {
+            keyboardListener.DisableKeyboar(true);
+            IsKeyboardDisable = true;
+            IsKeyboardEnable = false;
+        }
+
+        private void DisableKeyboardExecute()
+        {
+            keyboardListener.DisableKeyboar(false);
+            IsKeyboardDisable = false;
+            IsKeyboardEnable = true;
+        }
+
+        #endregion
+
+        #region Disable Shortcut
+
         /// <summary>
-        /// NOT USED - deprecated
+        /// 
         /// </summary>
         private void EnableShortcutExecute()
         {
-            //ManageShortcut(true);
-            //IsEnableShortcut = false;
-            //IsDisableShortcut = true;
+            ManageShortcut(true);
+            IsEnableShortcut = false;
+            IsDisableShortcut = true;
         }
 
         /// <summary>
-        /// NOT USED  - deprecated
+        /// 
         /// </summary>
         private void DisableShortcutExecute()
         {
@@ -876,7 +1048,7 @@ namespace CG.LockUnlockTester
         }
 
         /// <summary>
-        /// NOT USED  - deprecated
+        /// 
         /// </summary>
         public void ManageShortcut(bool enable)
         {
@@ -935,7 +1107,7 @@ namespace CG.LockUnlockTester
         {
             try
             {
-                LockUnlockHelper.SetTaskBarByCmd(true);
+                LockUnlockHelper.ShowTaskbar(true);
             }
             catch (Exception ex)
             {
@@ -950,7 +1122,7 @@ namespace CG.LockUnlockTester
         {
             try
             {
-                LockUnlockHelper.SetTaskBarByCmd(false);
+                LockUnlockHelper.ShowTaskbar(false);
             }
             catch (Exception ex)
             {
@@ -963,12 +1135,49 @@ namespace CG.LockUnlockTester
 
         #endregion
 
+        #region TaskView
+
+        private void EnableTaskViewExecute()
+        {
+            try
+            {
+                LockUnlockHelper.SetTaskView(true);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+                MessageForTheUser = $"Fail to disable the Task view";
+            }
+            IsEnableTaskView = false;
+            IsDisableTaskView = true;
+            TaskViewStatus = LockUnlockHelper.ReadTaskView().ToString();
+        }
+
+        private void DisableTaskViewExecute()
+        {
+            try
+            {
+                LockUnlockHelper.SetTaskView(false);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+                MessageForTheUser = $"Fail to disable the Task view";
+            }
+            IsEnableTaskView = true;
+            IsDisableTaskView = false;
+            TaskViewStatus = LockUnlockHelper.ReadTaskView().ToString();
+        }
+
+        #endregion
+
         #region LimitAreaMouse
 
-        /* Un timer controlla che il mouse non sia oltre il limite (troppo vicino alla barra di windows)
+        /* 
+         * Un timer controlla che il mouse non sia oltre il limite (troppo vicino alla barra di windows)
          * Se lo è riporta il mouse in piu in alto. 
          */
-
+                 
         private void EnableLimitAreaMouseExecute()
         {
             dispatcherTimerMousePosition.Start();
@@ -1006,5 +1215,97 @@ namespace CG.LockUnlockTester
         private static extern bool SetCursorPos(int X, int Y);
 
         #endregion
+        
+
+        //private void MouseHook()
+        //{
+
+        //    using (var eventHookFactory = new EventHookFactory())
+        //    {
+        //        keyboardWatcher = eventHookFactory.GetKeyboardWatcher();
+        //        keyboardWatcher.Start();
+        //        keyboardWatcher.OnKeyInput += (s, e) =>
+        //        {
+        //            Console.WriteLine(string.Format("Key {0} event of key {1}", e.KeyData.EventType, e.KeyData.Keyname));
+        //        };
+
+        //        //mouseWatcher = eventHookFactory.GetMouseWatcher();
+        //        //mouseWatcher.Start();
+        //        //mouseWatcher.OnMouseInput += (s, e) =>
+        //        //{
+        //        //    Console.WriteLine(string.Format("Mouse event {0} at point {1},{2}", e.Message.ToString(), e.Point.x, e.Point.y));
+        //        //};
+
+        //        //var clipboardWatcher = eventHookFactory.GetClipboardWatcher();
+        //        //clipboardWatcher.Start();
+        //        //clipboardWatcher.OnClipboardModified += (s, e) =>
+        //        //{
+        //        //    Console.WriteLine(string.Format("Clipboard updated with data '{0}' of format {1}", e.Data, e.DataFormat.ToString()));
+        //        //};
+
+
+        //        //var applicationWatcher = eventHookFactory.GetApplicationWatcher();
+        //        //applicationWatcher.Start();
+        //        //applicationWatcher.OnApplicationWindowChange += (s, e) =>
+        //        //{
+        //        //    Console.WriteLine(string.Format("Application window of '{0}' with the title '{1}' was {2}", e.ApplicationData.AppName, e.ApplicationData.AppTitle, e.Event));
+        //        //};
+
+        //        //var printWatcher = eventHookFactory.GetPrintWatcher();
+        //        //printWatcher.Start();
+        //        //printWatcher.OnPrintEvent += (s, e) =>
+        //        //{
+        //        //    Console.WriteLine(string.Format("Printer '{0}' currently printing {1} pages.", e.EventData.PrinterName, e.EventData.Pages));
+        //        //};
+
+        //        //waiting here to keep this thread running           
+        //        //Console.Read();
+
+        //        //stop watching
+
+        //        //clipboardWatcher.Stop();
+        //        //applicationWatcher.Stop();
+        //        //printWatcher.Stop();
+        //    }
+
+
+        //}
+
+        /// ---------------------------------------------------------------------
+
+        #region Detect new usb
+
+        private void DetectUSB()
+        {
+            HwndSource hwndSource = HwndSource.FromHwnd(Process.GetCurrentProcess().MainWindowHandle);
+            if (hwndSource != null)
+            {
+                IntPtr windowHandle = hwndSource.Handle;
+                hwndSource.AddHook(UsbNotificationHandler);
+                USBDetector.RegisterUsbDeviceNotification(windowHandle);
+            }
+        }
+
+        private IntPtr UsbNotificationHandler(IntPtr hwnd, int msg, IntPtr wparam, IntPtr lparam, ref bool handled)
+        {
+            if (msg == USBDetector.UsbDevicechange)
+            {
+                switch ((int)wparam)
+                {
+                    case USBDetector.UsbDeviceRemoved:
+                        MessageBox.Show("USB Removed");
+                        break;
+                    case USBDetector.NewUsbDeviceConnected:
+                        MessageBox.Show("New USB Detected");
+                        break;
+                }
+            }
+
+            handled = false;
+            return IntPtr.Zero;
+        }
+
+        #endregion
+
     }
 }

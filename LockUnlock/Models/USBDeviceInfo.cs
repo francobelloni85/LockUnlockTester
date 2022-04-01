@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace LockUnlock
 {
+
+    public enum DevConType {  notSet, HardwareIDs , CompatibleIDs }
 
     /// <summary>
     /// Support class when devices are read with DevCon
@@ -12,9 +15,8 @@ namespace LockUnlock
         public string HardwareID { get; private set; }
         public string Name { get; private set; }
         public string IsRunning { get; private set; }
-
         public string Type { get; private set; }
-
+        public string DisplayName { get; set; }
         public DevconUSB(int count, string hardwareID, string name, string isRunning)
         {
             this.Count = count;
@@ -75,6 +77,15 @@ namespace LockUnlock
         public string StatusInfo { get; set; }
 
         public Guid ClassGuid { get; set; }
+    }
+
+    public class DevConaHardwareDevice
+    {
+        public int Count;
+        public string ID;
+        public string Name;
+        public List<string> HardwareIDs = new List<string>();
+        public List<string> CompatibleIDs = new List<string>();
     }
 
 

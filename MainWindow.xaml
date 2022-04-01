@@ -9,7 +9,7 @@
                   xmlns:local="clr-namespace:CG.LockUnlockTester"
                   mc:Ignorable="d"
                   Title="MainWindow"
-                  Height="2200"
+                  Height="2800"
                   Width="800">
 
     <!--<Window.Resources>
@@ -70,7 +70,7 @@
                 <StackPanel Orientation="Horizontal"
                             Margin="10">
                     <Label Margin="10"
-                           Content="DISABLE USB BY REGISTRY"
+                           Content="DISABLE USB STORAGE BY REGISTRY"
                            FontSize="20"
                            FontWeight="Black" />
                     <Label VerticalAlignment="Center"
@@ -299,16 +299,21 @@
                                             <Label   HorizontalAlignment="Stretch"
                                                      HorizontalContentAlignment="Stretch"
                                                      Width="450"
-                                                     Content="{Binding HardwareID}" />
-                                            <Label   HorizontalAlignment="Stretch"
+                                                     Content="{Binding DisplayName}" />                                            
+                                            <!--<Label   HorizontalAlignment="Stretch"
                                                      Width="450"
                                                      Margin="20,0,0,0"
                                                      HorizontalContentAlignment="Stretch"
-                                                     Content="{Binding Name}" />
+                                                     Content="{Binding Name}" />-->
                                             <Label   HorizontalAlignment="Stretch"
+                                                     Width="250"
                                                      HorizontalContentAlignment="Stretch"
                                                      Content="{Binding IsRunning}" />
-
+                                            <Label   HorizontalAlignment="Stretch"
+                                                     HorizontalContentAlignment="Stretch"
+                                                     Width="450"
+                                                     Margin="0,0,5,0"
+                                                     Content="{Binding HardwareID}" />
                                         </StackPanel>
                                     </DataTemplate>
                                 </ListView.ItemTemplate>
@@ -332,15 +337,27 @@
                 </Grid>
             </StackPanel>
 
-
-            <!-- DISABLE KEYBOARD -->
+            <!-- DISABLE VIRTUAL KEYBOARD -->
             <StackPanel Margin="0,30,0,0">
 
-                <Label Margin="10"
+                <StackPanel Orientation="Horizontal" Margin="10">
+                
+                <Label 
                        Content="VIRTUAL KEYBOARD"
                        FontSize="20"
                        FontWeight="Black" />
 
+               <Label Margin="10,0,0,0"
+                       Content="IsAllowed"
+                       FontSize="18"
+                       FontWeight="Black" />
+               <Label Margin="10,0,0,0"
+                       Content="{Binding IsAllowedVirtualKeyboard}"
+                       FontSize="18"
+                       FontWeight="Black" />
+
+                </StackPanel>
+                
 
                 <StackPanel Orientation="Horizontal"
                             Margin="10,00,0,0">
@@ -356,8 +373,60 @@
                             IsEnabled="{Binding IsVirtualKeyboardEnable}">Enable</Button>
                 </StackPanel>
             </StackPanel>
+            
+            <!-- DISABLE KEY LOGGER -->
+            <StackPanel Margin="0,30,0,0">
 
-            <!-- DISABLE KEYBOARD -->
+                <Label Margin="10"
+                       Content="KEY LOGGER"
+                       FontSize="20"
+                       FontWeight="Black" />
+
+
+                <StackPanel Orientation="Horizontal"
+                            Margin="10,00,0,0">
+                    
+                    <Button Command="{Binding CreateKeyLoggerCommand }"
+                            Height="50"
+                            Width="250"
+                            IsEnabled="{Binding IsCreateKeyLoggerEnable}">Create Key logger</Button>
+                    <Button Margin="10,00,0,0"
+                            Height="50"
+                            Width="250"
+                            Command="{Binding DisposeKeyLoggerCommand}"
+                            IsEnabled="{Binding IsKeyLoggerAlive}">Dispose</Button>
+
+                </StackPanel>
+            </StackPanel>
+
+
+
+
+            <!-- DISABLE REAL KEYBOARD -->
+            <StackPanel Margin="0,30,0,0">
+
+                <Label Margin="10"
+                       Content="KEYBOARD"
+                       FontSize="20"
+                       FontWeight="Black" />
+
+
+                <StackPanel Orientation="Horizontal"
+                            Margin="10,00,0,0">
+
+                    <Button Command="{Binding DisableKeyboardCommand }"
+                            Height="50"
+                            Width="250"
+                            IsEnabled="{Binding IsKeyboardDisable}">Disable</Button>
+                    <Button Margin="10,00,0,0"
+                            Height="50"
+                            Width="250"
+                            Command="{Binding EnableKeyboardCommand}"
+                            IsEnabled="{Binding IsKeyboardEnable}">Enable</Button>
+                </StackPanel>
+            </StackPanel>
+
+            <!-- DISABLE SHORTCUT -->
             <StackPanel>
 
                 <Label Margin="10,30,0,0"
@@ -373,33 +442,50 @@
 
                 <StackPanel Orientation="Horizontal"
                             Margin="10,10,0,0">
-
-                    <Button Command="{Binding CreateKeyLoggerCommand }"
-                            Height="50"
-                            Width="250"
-                            IsEnabled="{Binding IsCreateKeyLoggerEnable}">Create Key logger</Button>
-                    <Button Margin="10,00,0,0"
-                            Height="50"
-                            Width="250"
-                            Command="{Binding DisposeKeyLoggerCommand}"
-                            IsEnabled="{Binding IsKeyLoggerAlive}">Dispose</Button>
                     
                     <Button Command="{Binding DisableShortcutCommand }"
                             Height="50"
                             Width="250"
-                            Margin="50,00,0,0"
-                            Visibility="Collapsed"
                             IsEnabled="{Binding IsDisableShortcut}">Disable</Button>
                     <Button Margin="10,00,0,0"
                             Height="50"
                             Width="250"
-                            Visibility="Collapsed"
                             Command="{Binding EnableShortcutCommand}"
                             IsEnabled="{Binding IsEnableShortcut}">Enable</Button>
                 </StackPanel>
             </StackPanel>
 
+            <!-- DISABLE TASK VIEW -->
+            <StackPanel>
 
+                <StackPanel Margin="10,30,0,0" Orientation="Horizontal">
+                <Label 
+                       Content="DISABLE TASK VIEW"
+                       FontSize="20"
+                       FontWeight="Black" />
+
+                <Label Margin="10,0,0,0"
+                       Content="{Binding TaskViewStatus}"
+                       FontSize="16"
+                       FontWeight="Black" />
+
+                </StackPanel>
+                
+                <StackPanel Orientation="Horizontal"
+                            Margin="10,10,0,0">
+
+                    <Button Command="{Binding DisableTaskViewCommand }"
+                            Height="50"
+                            Width="250"
+                            IsEnabled="{Binding IsDisableTaskView}">Disable Task View</Button>
+                    <Button Margin="10,00,0,0"
+                            Height="50"
+                            Width="250"
+                            Command="{Binding EnableTaskViewCommand}"
+                            IsEnabled="{Binding IsEnableTaskView}">Enable Task View</Button>
+                </StackPanel>
+            </StackPanel>
+            
             <!-- DISABLE Task Manager -->
             <StackPanel>
 

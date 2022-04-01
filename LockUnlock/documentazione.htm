@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+    <meta name="generator" content="Hugo 0.88.1">
+    <title>Documentazione</title>
+
+	<!-- Bootstrap core CSS -->
+	<link href="bootstrap.css" rel="stylesheet">
+
+
+    <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+    </style>
+
+  </head>
+  <body>
+    
+<div class="col-lg-8 mx-auto p-3 py-md-5">
+  <header class="d-flex align-items-center pb-3 mb-5 border-bottom">
+		<span class="fs-4">LockUnlock libreria</span>
+  </header>
+  <main>
+  <div class="row g-5">
+      <div class="col-12">
+        Libreria per disabilita alcune azioni all'utente.
+	  </div>
+	  </div>
+    <br><br>
+    <div class="row g-5">
+      <div class="col-12">
+		
+		<h3>USB storage</h3>
+		<p>Disabilita globalmente le usb storage</p>
+
+		<ul>
+		<li>GetUSBDevices()</li>
+		<li>ReadUSBStatusInRegistry()</li>
+		<li>SetUSBbyRegistry()</li>
+		</ul>
+		
+		<p>
+		Permette di disabilitare le chiavette USB / hard disk esterni. Funziona sui dispositivi futuri. 
+		Se infatti una chiavetta è già inserita questa funzione non verrà disabilitata.
+		</p>
+
+		</div>
+
+    </div>
+	 <br>
+	<div class="row g-5">
+      <div class="col-12">
+		
+		<h3>USB API</h3>
+		<p>Disabilita la singola usb scrivendo nel registro di windows</p>
+
+		<p>
+		Permette di disabilitare la singola usb scrivendo nel registro di windows.
+		</p>
+		<p>Permette di disabilitare <strong>tutte</strong> le usb indistintamente, rendendo initulizzabile il pc</p>
+
+		</div>
+    </div>
+	 <br>
+	<div class="row g-5">
+      <div class="col-12">
+		
+		<h3>Devcon.exe</h3>
+		<p>è un tool di microsoft che permette di disabilitare il singolo componente USB.</p>
+		<p>Questo tool è chiamato con la power shell e una volta eseguito un comando scrive su file il risultato. (il file è nella stessa cartella del programma)</p>
+		<p>La libreria permette di controllare e recuperare le periferiche collegate. Ci sono 2 funzioni:</p>
+		<p>
+		GetDevConUSBList: Recupera solo le usb
+		</p>		
+		<p>
+		GetDevConaAllHardware: recupera tutti i dispositivi del pc
+		</p>
+
+		<p>è possibile disattivare il mouse e le altre periferiche. Non è possibile disattivare la tastiera con il devcon.</p>
+		
+		<p>Per disattivare una usb si recupera la lista e poi si chiama la funzione <code>EnableDeviceDevCon(value)</code></p>
+
+		</div>
+    </div>
+	 <br>
+	<div class="row g-5">
+      <div class="col-12">		
+		<h3>Virtual keyboard</h3>
+		<p>Ci sono 3 metodi per disattivare la Virtual keyboard. Il primo e secondo sono tramite registro (ma non sembrano funzionare) il terzo è tramite gli eventi di windows.</p>
+		<p>
+		Quando questa funzione viene chiamata ci si registra all'evento "NuovoProgramma". Quando un nuovo programma di windows viene eseguito 
+		si scatena questo evento. Se il nuovo programma è osk.exe ovvero la tastiera questo viene "terminato".
+		</p>
+		</div>
+    </div>
+	 <br>
+	<div class="row g-5">
+      <div class="col-12">		
+		<h3>TaskManager</h3>
+		<p>Ci sono 2 metodi per disattivare la il task manager. Il primo è tramite registro (ma non sembra funzionare) il secondo è tramite shell</p>
+		<p>
+		Quando questa funzione viene chiamato il terminale che esegue il comando.
+		</p>
+		</div>
+    </div>
+	 <br>
+	<div class="row g-5">
+      <div class="col-12">		
+		<h3>TaskBar</h3>
+		<p>La task bar viene nascosta ma è lo stesso raggiungibile tramite il punsante sulla statiera di windows. Bisogna usare il keylogger per impedire che funzioni</p>
+		</div>
+    </div>
+
+	 <br>
+	<div class="row g-5">
+      <div class="col-12">		
+		<h3>keylogger</h3>
+		<p>Viene usato per impedire all'utente di usare la tastiera oppure per disabilitare certi tasti/combinazione di tasti.</p>
+		<p>Il key logger si registra agli enventi che provengono dalla tastiera.</p>	
+		<p>Se voglio disabilitare la tastiera è il key logger nella funzione <code>private IntPtr LowLevelKeyboardProc(int nCode, UIntPtr wParam, IntPtr lParam)</code> impedisce all'evento 'tasto premuto' di propagarsi </p>
+		<p>Si possono customizzare i tasti da disabilitare settando la variabile <code>HashSet<Keys> KeysToAvoid</code></p>		
+		<p>Si può volendo collegare una callback all'evento per poter ad esempio stampare sulla console il tasto premuto</p>
+		</div>
+    </div>
+	
+
+  </main>
+  
+
+
+
+</body></html>

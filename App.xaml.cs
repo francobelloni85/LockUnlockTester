@@ -1,6 +1,4 @@
-﻿using LockUnlock;
-using System;
-using System.Windows;
+﻿using System.Windows;
 
 namespace CG.LockUnlockTester
 {
@@ -20,6 +18,7 @@ namespace CG.LockUnlockTester
             // Show the window
             wnd.Show();
 
+            
         }
 
 
@@ -32,5 +31,7 @@ namespace CG.LockUnlockTester
         {
             
         }
+
+       
     }
 }

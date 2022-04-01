@@ -22,6 +22,10 @@ namespace LockUnlock
     /// </summary>
     public class KeyboardListener : IDisposable
     {
+        /// <summary>
+        /// It's used to flag enable/disable the keyboard
+        /// </summary>
+        private bool disableKeyboard = false;
 
         static readonly HashSet<Keys> DefaultKeysToAvoid = new HashSet<Keys>() {
                  Keys.LMenu
@@ -35,6 +39,15 @@ namespace LockUnlock
 
         // List of all keys that the user cannot press 
         HashSet<Keys> KeysToAvoid = new HashSet<Keys>();
+
+        /// <summary>
+        /// Disable or enable the keyboard
+        /// </summary>
+        /// <param name="value"></param>
+        public void DisableKeyboar(bool value) {
+            disableKeyboard = value;
+        }
+
 
         /// <summary>
         /// Creates global keyboard listener.
@@ -53,8 +66,9 @@ namespace LockUnlock
             // Assign the asynchronous callback event
             hookedKeyboardCallbackAsync = new KeyboardCallbackAsync(KeyboardListener_KeyboardCallbackAsync);
 
-            // When the key-logger is created it's disable to press multiple keys 
-            KeysToAvoid = DefaultKeysToAvoid;
+            // When the key-logger is created 
+            // the user is able to press multiple keys 
+            KeysToAvoid = new HashSet<Keys>();
 
         }
 
@@ -134,9 +148,15 @@ namespace LockUnlock
             int vkCode = Marshal.ReadInt32(lParam);
             Keys key = (Keys)vkCode;
 
-            if (KeysToAvoid.Contains(key))
+            // Exit and not propagate the event
+            if (disableKeyboard) {
                 return (IntPtr)1;
+            }
 
+            // Exit and not propagate the event
+            if (KeysToAvoid.Contains(key)) {
+                return (IntPtr)1;
+            }   
 
             if (nCode >= 0)
                 if (wParam.ToUInt32() == (int)InterceptKeys.KeyEvent.WM_KEYDOWN ||
